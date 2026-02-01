@@ -7,7 +7,6 @@ on:
       - '.github/workflows/build-caddy.yaml'
     branches:
       - master
-      - caddy-v2
   workflow_dispatch:
 
 env:
