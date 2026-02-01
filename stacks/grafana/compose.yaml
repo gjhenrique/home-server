@@ -19,3 +19,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    labels:
+      caddy: grafana.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:3000"

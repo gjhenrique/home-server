@@ -27,6 +27,9 @@ services:
       - "prometheus.io/scrape=true"
       - "prometheus.io/port=8081"
       - "prometheus.io/path=/metrics"
+      caddy: photos.${DOMAIN}
+      caddy.import: only_tls
+      caddy.reverse_proxy: "127.0.0.1:2283"
     depends_on:
       - redis
       - database

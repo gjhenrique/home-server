@@ -2,7 +2,7 @@
 name = "github-lisa"
 [resource_sync.config]
 repo = "gjhenrique/rpi_stuff"
-branch = "master"
+branch = "caddy-v2"
 resource_path = ["komodo-lisa.toml"]
 
 [[server]]
@@ -41,7 +41,7 @@ name = "syncthing"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks"
-branch = "master"
+branch = "caddy-v2"
 file_paths = ["syncthing/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
@@ -53,7 +53,7 @@ name = "photos"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks"
-branch = "master"
+branch = "caddy-v2"
 file_paths = ["photos/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
@@ -67,10 +67,11 @@ name = "torrent"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks"
-branch = "master"
+branch = "caddy-v2"
 file_paths = ["torrent/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 TS_EXIT_NODE_IP: 100.100.45.90 # fra-0003
 TS_HOSTNAME: "[[TORRENT_TS_HOSTNAME]]"
@@ -84,9 +85,10 @@ name = "actual"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/actual"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -95,9 +97,10 @@ name = "emby"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/emby"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -106,7 +109,7 @@ name = "netdata"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/netdata"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
 """
@@ -117,9 +120,11 @@ name = "paperless"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/paperless"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
+PAPERLESS_CADDY_IMPORT: sso
 
 PAPERLESS_URL="[[PAPERLESS_URL]]"
 """
@@ -130,7 +135,7 @@ name = "jellyfin"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/jellyfin"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
 """
@@ -141,7 +146,7 @@ name = "samba"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/samba"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
 
@@ -157,10 +162,11 @@ name = "backup"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks"
-branch = "master"
+branch = "caddy-v2"
 file_paths = ["backup/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -169,9 +175,10 @@ name = "arm"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/arm"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -180,9 +187,10 @@ name = "home-assistant"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/home-assistant"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -191,9 +199,10 @@ name = "adguard"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/adguard"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -202,7 +211,7 @@ name = "caddy"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks"
-branch = "master"
+branch = "caddy-v2"
 file_paths = ["caddy/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
@@ -221,7 +230,7 @@ name = "subnet-router"
 server = "lisa"
 repo = "gjhenrique/rpi_stuff"
 run_directory = "stacks/subnet-router"
-branch = "master"
+branch = "caddy-v2"
 environment = """
 EXT_PATH: /mnt/external
 

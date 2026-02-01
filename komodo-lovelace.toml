@@ -58,6 +58,7 @@ run_directory = "stacks/emby"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 EMBY_HTTP_PORT: 8096
 EMBY_HTTPS_PORT: 8097
@@ -144,6 +145,7 @@ branch = "master"
 file_paths = ["photos-full/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 """
@@ -158,6 +160,7 @@ run_directory = "stacks/torrent"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 TS_EXIT_NODE_IP: "[[TORRENT_EXIT_NODE_IP]]"
 TS_HOSTNAME: "[[TORRENT_TS_HOSTNAME]]"
@@ -175,6 +178,7 @@ run_directory = "stacks/paperless"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 PAPERLESS_URL: "[[PAPERLESS_URL]]"
 """
@@ -222,6 +226,7 @@ branch = "master"
 file_paths = ["backup/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -251,6 +256,7 @@ run_directory = "stacks/grafana"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 GRAFANA_ADMIN_PASSWORD: "[[GRAFANA_ADMIN_PASSWORD]]"
 

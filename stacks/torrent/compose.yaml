@@ -19,6 +19,10 @@ services:
     volumes:
       - ${EXT_PATH}/torrent/transmission:/config
       - ${EXT_PATH}/media/torrents:/downloads
+    labels:
+      caddy: torrents.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:9091"
 
   # https://docs.linuxserver.io/images/docker-prowlarr/#usage
   prowlarr:
@@ -34,6 +38,10 @@ services:
       TZ: "Europe/Berlin"
     volumes:
       - ${EXT_PATH}/torrent/prowlarr:/config
+    labels:
+      caddy: prowlarr.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:9696"
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:4.0.16
@@ -45,6 +53,10 @@ services:
     volumes:
       - ${EXT_PATH}/torrent/sonarr:/config
       - ${EXT_PATH}/media:/media
+    labels:
+      caddy: tv.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:8989"
 
   radarr:
     image: lscr.io/linuxserver/radarr:6.0.4
@@ -56,6 +68,10 @@ services:
     volumes:
       - ${EXT_PATH}/torrent/radarr:/config
       - ${EXT_PATH}/media:/media
+    labels:
+      caddy: movies.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:7878"
 
   tailscale:
     image: "ghcr.io/tailscale/tailscale:v1.92.5"

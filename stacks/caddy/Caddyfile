@@ -61,152 +61,18 @@
 	}
 }
 
-(cloudflare_tls) {
+(only_tls) {
 	tls {
 		dns cloudflare {$CLOUDFLARE_API_TOKEN}
 	}
 }
 
-# caddy-security
+(sso) {
+	import only_tls
+	authorize with mypolicy
+}
+
 auth.{$DOMAIN} {
-	import cloudflare_tls
-
+	import only_tls
 	authenticate with myportal
-}
-
-actual.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:5006
-}
-
-# adguard
-dns.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:8090
-}
-
-# emby
-emby.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:8096
-}
-
-# paperless
-docs.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with paperless_policy
-	# Only send X-Token-User-Email when Caddy JWT is present; otherwise Paperless sees
-	# empty remote-user header and rejects API token login (e.g. app POST to /api/token/).
-	@with_jwt header X-User-Email *
-	handle @with_jwt {
-		reverse_proxy 127.0.0.1:8000 {
-			header_up X-Token-User-Email {http.request.header.X-User-Email}
-		}
-	}
-	handle {
-		reverse_proxy 127.0.0.1:8000
-	}
-}
-
-# scanned paper
-scan.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:8001
-}
-
-#arm
-dvd.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:8888
-}
-
-#arm
-backup.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:9898
-}
-
-# immich
-photos.{$DOMAIN} {
-	import cloudflare_tls
-
-	# no authentication because of the mobile app
-	# auth is handled by immich itself
-	reverse_proxy 127.0.0.1:2283 {
-		# Immich can proxy/stream large video files; keep upstream timeouts high
-		transport http {
-			# Max time to establish a TCP connection to upstream
-			dial_timeout 60s
-
-			# Time allowed to read the entire upstream response body (long video streams)
-			read_timeout 2h
-
-			# Time allowed to write the entire request body to upstream (large uploads)
-			write_timeout 2h
-		}
-	}
-}
-
-# home-assistant
-ha.{$DOMAIN} {
-	import cloudflare_tls
-
-	# no auth because of the mobile app
-	# HA doesn't require too much security anyway
-	reverse_proxy 127.0.0.1:8123
-}
-
-
-# Add <AuthenticationMethod>External</AuthenticationMethod> to radarr and sonarr config.xml
-# sonarr
-tv.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:8989
-}
-
-# radarr
-movies.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:7878
-}
-
-# transmission
-torrents.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:9091
-}
-
-# prowlarr
-prowlarr.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:9696
-}
-
-# grafana dashboards
-grafana.{$DOMAIN} {
-	import cloudflare_tls
-
-	authorize with mypolicy
-	reverse_proxy 127.0.0.1:3000
 }

@@ -15,3 +15,7 @@ services:
     volumes:
       - ${EXT_PATH}/adguard/work:/opt/adguardhome/work
       - ${EXT_PATH}/adguard/conf:/opt/adguardhome/conf
+    labels:
+      caddy: dns.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:8090"

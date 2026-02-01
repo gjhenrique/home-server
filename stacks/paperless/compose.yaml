@@ -28,6 +28,10 @@ services:
       PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: true
       # Trust proxy so X-Forwarded-For is used; required when behind Caddy so API token login works
       PAPERLESS_TRUSTED_PROXIES: "127.0.0.1 172.17.0.0/16 172.18.0.0/16"
+    labels:
+      caddy: docs.${DOMAIN}
+      caddy.import: ${PAPERLESS_CADDY_IMPORT:-only_tls}
+      caddy.reverse_proxy: "127.0.0.1:8000"
 
   # paperless takes some minutes to index the scanned file
   # but sometimes I just want a document right away
@@ -44,6 +48,10 @@ services:
       - ${EXT_PATH}/documents/caddy_data:/data
       - ${EXT_PATH}/documents/caddy_config:/config
     command: caddy file-server --root /temporary --listen :8080 --browse
+    labels:
+      caddy: scan.${DOMAIN}
+      caddy.import: ${PAPERLESS_CADDY_IMPORT:-only_tls}
+      caddy.reverse_proxy: "127.0.0.1:8001"
 
   cleanup-old-documents:
     image: alpine:latest
