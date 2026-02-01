@@ -6,7 +6,7 @@ services:
       - ${EXT_PATH}/documents/redis:/data
 
   webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.5
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.6
     restart: unless-stopped
     ports:
       - 127.0.0.1:8000:8000
