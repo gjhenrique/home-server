@@ -57,6 +57,7 @@ branch = "master"
 file_paths = ["photos/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 """
