@@ -1,7 +1,7 @@
 [[resource_sync]]
 name = "github-lovelace"
 [resource_sync.config]
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 branch = "master"
 resource_path = ["komodo-lovelace.toml"]
 
@@ -41,7 +41,7 @@ name = "lovelace-syncthing"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/syncthing"
 branch = "master"
 environment = """
@@ -53,7 +53,7 @@ name = "lovelace-emby"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/emby"
 branch = "master"
 environment = """
@@ -71,7 +71,7 @@ name = "lovelace-kavita"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/kavita"
 branch = "master"
 environment = """
@@ -85,7 +85,7 @@ name = "lovelace-subnet-router"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/subnet-router"
 branch = "master"
 environment = """
@@ -102,7 +102,7 @@ name = "lovelace-caddy"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["caddy/compose.yaml"]
@@ -122,7 +122,7 @@ name = "lovelace-samba"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/samba"
 branch = "master"
 environment = """
@@ -139,7 +139,7 @@ name = "lovelace-photos"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["photos-full/compose.yaml"]
@@ -155,7 +155,7 @@ name = "lovelace-torrent"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/torrent"
 branch = "master"
 environment = """
@@ -173,7 +173,7 @@ name = "lovelace-paperless"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/paperless"
 branch = "master"
 environment = """
@@ -188,7 +188,7 @@ name = "lovelace-system-exporters"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/system-exporters"
 branch = "master"
 environment = """
@@ -203,7 +203,7 @@ name = "lovelace-health-exporters"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/health-exporters"
 branch = "master"
 environment = """
@@ -220,7 +220,7 @@ name = "lovelace-backup"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["backup/compose.yaml"]
@@ -234,7 +234,7 @@ name = "lovelace-prometheus"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["prometheus/compose.yaml"]
@@ -251,7 +251,7 @@ name = "lovelace-grafana"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/grafana"
 branch = "master"
 environment = """
