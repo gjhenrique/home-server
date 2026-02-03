@@ -7,7 +7,9 @@ services:
       - 445:445
     environment:
       UID_photos: 1100
-      UID_torrent: 1000
+      # users won't be able to change files
+      # change it also on the stack
+      UID_torrent: 1001
       UID_paperless: 1000
       UID_tv: 1200
 
