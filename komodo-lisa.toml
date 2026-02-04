@@ -21,6 +21,7 @@ executions = [
   { execution.type = "RunSync", execution.params.sync = "github-lisa-private", enabled = true }
 ]
 
+[[procedure.config.stage]]
 name = "Sync github repo"
 enabled = true
 executions = [
