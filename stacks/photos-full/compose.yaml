@@ -1,7 +1,7 @@
 ---
 services:
   immich:
-    image: ghcr.io/immich-app/immich-server:v2.4.1
+    image: ghcr.io/immich-app/immich-server:v2.5.3
     restart: unless-stopped
     ports:
       - 2283:2283
@@ -55,7 +55,7 @@ services:
     shm_size: 128mb
 
   machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:v2.4.1
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.3
     restart: unless-stopped
     volumes:
       - ${EXT_PATH}/immich/model-cache:/cache
