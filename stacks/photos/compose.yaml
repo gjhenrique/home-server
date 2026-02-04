@@ -9,6 +9,10 @@ services:
       - ${EXT_PATH}/immich:/data
       - ${EXT_PATH}/photos:/mnt/media/photos:ro
       - /etc/localtime:/etc/localtime:ro
+    labels:
+      caddy: photos.${DOMAIN}
+      caddy.import: only_tls
+      caddy.reverse_proxy: "127.0.0.1:2283"
     devices:
       - /dev/dri:/dev/dri
     environment:

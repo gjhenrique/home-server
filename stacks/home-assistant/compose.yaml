@@ -12,3 +12,7 @@ services:
       - /run/dbus:/run/dbus:ro
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
+    labels:
+      caddy: ha.${DOMAIN}
+      caddy.import: only_tls
+      caddy.reverse_proxy: "127.0.0.1:8123"

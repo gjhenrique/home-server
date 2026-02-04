@@ -26,3 +26,7 @@ services:
       # hardware encoding
       - /dev/dri:/dev/dri
     privileged: true
+    labels:
+      caddy: dvd.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:8888"

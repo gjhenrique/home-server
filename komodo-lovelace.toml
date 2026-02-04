@@ -1,7 +1,7 @@
 [[resource_sync]]
 name = "github-lovelace"
 [resource_sync.config]
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 branch = "master"
 resource_path = ["komodo-lovelace.toml"]
 
@@ -41,7 +41,7 @@ name = "lovelace-syncthing"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/syncthing"
 branch = "master"
 environment = """
@@ -53,11 +53,12 @@ name = "lovelace-emby"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/emby"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 EMBY_HTTP_PORT: 8096
 EMBY_HTTPS_PORT: 8097
@@ -70,7 +71,7 @@ name = "lovelace-kavita"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/kavita"
 branch = "master"
 environment = """
@@ -84,7 +85,7 @@ name = "lovelace-subnet-router"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/subnet-router"
 branch = "master"
 environment = """
@@ -101,7 +102,7 @@ name = "lovelace-caddy"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["caddy/compose.yaml"]
@@ -121,7 +122,7 @@ name = "lovelace-samba"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/samba"
 branch = "master"
 environment = """
@@ -138,12 +139,13 @@ name = "lovelace-photos"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["photos-full/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 """
@@ -153,11 +155,12 @@ name = "lovelace-torrent"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/torrent"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 TS_EXIT_NODE_IP: "[[TORRENT_EXIT_NODE_IP]]"
 TS_HOSTNAME: "[[TORRENT_TS_HOSTNAME]]"
@@ -170,11 +173,12 @@ name = "lovelace-paperless"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/paperless"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 PAPERLESS_URL: "[[PAPERLESS_URL]]"
 """
@@ -184,7 +188,7 @@ name = "lovelace-system-exporters"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/system-exporters"
 branch = "master"
 environment = """
@@ -199,7 +203,7 @@ name = "lovelace-health-exporters"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/health-exporters"
 branch = "master"
 environment = """
@@ -216,12 +220,13 @@ name = "lovelace-backup"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["backup/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
@@ -229,7 +234,7 @@ name = "lovelace-prometheus"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["prometheus/compose.yaml"]
@@ -246,11 +251,12 @@ name = "lovelace-grafana"
 tags = ["lovelace"]
 [stack.config]
 server = "lovelace"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/grafana"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 GRAFANA_ADMIN_PASSWORD: "[[GRAFANA_ADMIN_PASSWORD]]"
 

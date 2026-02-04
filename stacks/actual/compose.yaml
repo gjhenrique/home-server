@@ -6,3 +6,7 @@ services:
       - "127.0.0.1:5006:5006"
     volumes:
       - ${EXT_PATH}/actual:/data
+    labels:
+      caddy: actual.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:5006"

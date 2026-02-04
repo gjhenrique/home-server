@@ -1,7 +1,7 @@
 [[resource_sync]]
 name = "github-lisa"
 [resource_sync.config]
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 branch = "master"
 resource_path = ["komodo-lisa.toml"]
 
@@ -15,6 +15,12 @@ address = "https://periphery:8120"
 name = "Deploy stacks"
 
 [[procedure.config.stage]]
+name = "Sync private github repo"
+enabled = true
+executions = [
+  { execution.type = "RunSync", execution.params.sync = "github-lisa-private", enabled = true }
+]
+
 name = "Sync github repo"
 enabled = true
 executions = [
@@ -39,7 +45,7 @@ executions = [
 name = "syncthing"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["syncthing/compose.yaml"]
@@ -51,12 +57,13 @@ EXT_PATH: /mnt/external
 name = "photos"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["photos/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 """
@@ -65,12 +72,13 @@ DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 name = "torrent"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["torrent/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 
 TS_EXIT_NODE_IP: 100.100.45.90 # fra-0003
 TS_HOSTNAME: "[[TORRENT_TS_HOSTNAME]]"
@@ -82,29 +90,31 @@ TS_OAUTH_SECRET: "[[TORRENT_TS_OAUTH_SECRET]]"
 name = "actual"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/actual"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "emby"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/emby"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "netdata"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/netdata"
 branch = "master"
 environment = """
@@ -115,11 +125,13 @@ EXT_PATH: /mnt/external
 name = "paperless"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/paperless"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
+PAPERLESS_CADDY_IMPORT: sso
 
 PAPERLESS_URL="[[PAPERLESS_URL]]"
 """
@@ -128,7 +140,7 @@ PAPERLESS_URL="[[PAPERLESS_URL]]"
 name = "jellyfin"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/jellyfin"
 branch = "master"
 environment = """
@@ -139,7 +151,7 @@ EXT_PATH: /mnt/external
 name = "samba"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/samba"
 branch = "master"
 environment = """
@@ -155,52 +167,56 @@ TV_PASSWORD: "[[SAMBA_TV_PASSWORD]]"
 name = "backup"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["backup/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "arm"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/arm"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "home-assistant"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/home-assistant"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "adguard"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/adguard"
 branch = "master"
 environment = """
 EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
 """
 
 [[stack]]
 name = "caddy"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
 file_paths = ["caddy/compose.yaml"]
@@ -219,7 +235,7 @@ CLOUDFLARE_API_TOKEN: "[[CADDY_CLOUDFLARE_API_TOKEN]]"
 name = "subnet-router"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
+repo = "gjhenrique/home-server"
 run_directory = "stacks/subnet-router"
 branch = "master"
 environment = """

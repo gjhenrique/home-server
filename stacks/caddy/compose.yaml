@@ -1,7 +1,7 @@
 ---
 services:
   caddy:
-    image: ghcr.io/authcrunch/authcrunch:v1.0.14
+    image: ghcr.io/gjhenrique/home-server/caddy:9c0a94d
     restart: unless-stopped
     network_mode: host
     environment:
@@ -16,5 +16,6 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ${EXT_PATH}/caddy/data:/data
       - ${EXT_PATH}/caddy/config:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     cap_add:
       - NET_ADMIN
