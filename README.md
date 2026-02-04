@@ -24,18 +24,10 @@ services:
 name = "syncthing"
 [stack.config]
 server = "lisa"
-repo = "gjhenrique/rpi_stuff"
-run_directory = "stacks"
+repo = "gjhenrique/home-server"
 branch = "master"
-file_paths = ["tailscale/compose.yaml", "tailscale/serve.yaml", "syncthing/compose.yaml"]
 environment = """
 EXT_PATH: /mnt/external
-
-TS_PORT: 8384
-TS_HOSTNAME: syncthing
-TS_TAG: syncthing
-TS_OAUTH_CLIENT: "[[TS_OAUTH_CLIENT]]"
-TS_OAUTH_SECRET: "[[TS_OAUTH_SECRET]]"
 """
 ```
 
