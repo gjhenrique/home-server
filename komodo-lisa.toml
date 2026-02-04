@@ -15,6 +15,12 @@ address = "https://periphery:8120"
 name = "Deploy stacks"
 
 [[procedure.config.stage]]
+name = "Sync private github repo"
+enabled = true
+executions = [
+  { execution.type = "RunSync", execution.params.sync = "github-lisa-private", enabled = true }
+]
+
 name = "Sync github repo"
 enabled = true
 executions = [
