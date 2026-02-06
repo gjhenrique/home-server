@@ -6,8 +6,8 @@ services:
     ports:
       - "127.0.0.1:3001:3000"
     volumes:
-      - ./docker.yaml:/app/config/docker.yaml
       - ${EXT_PATH}/homepage/config:/app/config
+      - ./docker.yaml:/app/config/docker.yaml
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - TZ=${TZ:-Europe/Berlin}
