@@ -30,3 +30,8 @@ services:
       caddy: dvd.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:8888"
+      homepage.group: Media
+      homepage.name: ARM
+      homepage.icon: arm
+      homepage.href: https://dvd.${DOMAIN}
+      homepage.description: DVD ripper

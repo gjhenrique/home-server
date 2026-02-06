@@ -23,6 +23,11 @@ services:
       caddy: torrents.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:9091"
+      homepage.group: Torrents
+      homepage.name: Transmission
+      homepage.icon: transmission
+      homepage.href: https://torrents.${DOMAIN}
+      homepage.description: Torrent client
 
   # https://docs.linuxserver.io/images/docker-prowlarr/#usage
   prowlarr:
@@ -42,6 +47,11 @@ services:
       caddy: prowlarr.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:9696"
+      homepage.group: Torrents
+      homepage.name: Prowlarr
+      homepage.icon: prowlarr
+      homepage.href: https://prowlarr.${DOMAIN}
+      homepage.description: Indexer manager
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:4.0.16
@@ -57,6 +67,11 @@ services:
       caddy: tv.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:8989"
+      homepage.group: Torrents
+      homepage.name: Sonarr
+      homepage.icon: sonarr
+      homepage.href: https://tv.${DOMAIN}
+      homepage.description: TV shows
 
   radarr:
     image: lscr.io/linuxserver/radarr:6.0.4
@@ -72,6 +87,11 @@ services:
       caddy: movies.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:7878"
+      homepage.group: Torrents
+      homepage.name: Radarr
+      homepage.icon: radarr
+      homepage.href: https://movies.${DOMAIN}
+      homepage.description: Movies
 
   tailscale:
     image: "ghcr.io/tailscale/tailscale:v1.92.5"

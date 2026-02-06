@@ -16,3 +16,8 @@ services:
       caddy: ha.${DOMAIN}
       caddy.import: only_tls
       caddy.reverse_proxy: "127.0.0.1:8123"
+      homepage.group: Home
+      homepage.name: Home Assistant
+      homepage.icon: home-assistant
+      homepage.href: https://ha.${DOMAIN}
+      homepage.description: Home automation

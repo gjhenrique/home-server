@@ -27,3 +27,8 @@ services:
       caddy: emby.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:8096"
+      homepage.group: Media
+      homepage.name: Emby
+      homepage.icon: emby
+      homepage.href: https://emby.${DOMAIN}
+      homepage.description: Media server

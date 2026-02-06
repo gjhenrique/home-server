@@ -20,6 +20,11 @@ services:
       caddy: backup.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:9898"
+      homepage.group: Infrastructure
+      homepage.name: Backrest
+      homepage.icon: backrest
+      homepage.href: https://backup.${DOMAIN}
+      homepage.description: Backup manager
 
 volumes:
   cache:

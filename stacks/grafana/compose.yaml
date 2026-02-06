@@ -23,3 +23,8 @@ services:
       caddy: grafana.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:3000"
+      homepage.group: Infrastructure
+      homepage.name: Grafana
+      homepage.icon: grafana
+      homepage.href: https://grafana.${DOMAIN}
+      homepage.description: Metrics dashboard

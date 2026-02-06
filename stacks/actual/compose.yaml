@@ -10,3 +10,8 @@ services:
       caddy: actual.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:5006"
+      homepage.group: Finance
+      homepage.name: Actual
+      homepage.icon: actual
+      homepage.href: https://actual.${DOMAIN}
+      homepage.description: Budget manager

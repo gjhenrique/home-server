@@ -247,3 +247,15 @@ TS_TAG: "[[SUBNET_ROUTER_TS_TAG]]"
 TS_HOSTNAME: "[[SUBNET_ROUTER_TS_HOSTNAME]]"
 TS_ROUTES: "[[SUBNET_ROUTER_TS_ROUTES]]"
 """
+
+[[stack]]
+name = "homepage"
+[stack.config]
+server = "lisa"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/homepage"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/external
+DOMAIN: "[[CADDY_DOMAIN]]"
+"""

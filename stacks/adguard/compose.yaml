@@ -19,3 +19,8 @@ services:
       caddy: dns.${DOMAIN}
       caddy.import: sso
       caddy.reverse_proxy: "127.0.0.1:8090"
+      homepage.group: Infrastructure
+      homepage.name: AdGuard
+      homepage.icon: adguard-home
+      homepage.href: https://dns.${DOMAIN}
+      homepage.description: DNS ad blocker

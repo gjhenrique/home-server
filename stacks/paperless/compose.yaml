@@ -32,6 +32,11 @@ services:
       caddy: docs.${DOMAIN}
       caddy.import: ${PAPERLESS_CADDY_IMPORT:-only_tls}
       caddy.reverse_proxy: "127.0.0.1:8000"
+      homepage.group: Documents
+      homepage.name: Paperless
+      homepage.icon: paperless-ngx
+      homepage.href: https://docs.${DOMAIN}
+      homepage.description: Document management
 
   # paperless takes some minutes to index the scanned file
   # but sometimes I just want a document right away

@@ -13,6 +13,11 @@ services:
       caddy: photos.${DOMAIN}
       caddy.import: only_tls
       caddy.reverse_proxy: "127.0.0.1:2283"
+      homepage.group: Media
+      homepage.name: Photos
+      homepage.icon: immich
+      homepage.href: https://photos.${DOMAIN}
+      homepage.description: Photo management
     devices:
       - /dev/dri:/dev/dri
     environment:

@@ -1,0 +1,17 @@
+---
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:v1.10.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ${EXT_PATH}/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - HOMEPAGE_VAR_DOMAIN=${DOMAIN}
+    labels:
+      caddy: ${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:3001"
