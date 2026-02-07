@@ -6,7 +6,7 @@ networks:
 services:
   # https://docs.linuxserver.io/images/docker-transmission
   transmission:
-    image: lscr.io/linuxserver/transmission:4.0.6
+    image: lscr.io/linuxserver/transmission:4.1.0
     restart: unless-stopped
     network_mode: "service:tailscale"
     # Don't work at all when Tailscale didn't start
