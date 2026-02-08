@@ -2,7 +2,7 @@
   "packages": [
     "git-crypt@0.8.0",
     "restic@0.18.1",
-    "yq-go@4.50.1",
+    "yq-go@4.52.2",
   ],
   "shell": {
     "scripts": {
