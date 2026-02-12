@@ -25,6 +25,7 @@ services:
       IMMICH_TELEMETRY_INCLUDE: "all"
     labels:
       prometheus.io/scrape: "true"
+      prometheus.io/address: "127.0.0.1:8081"
       prometheus.io/port: "8081"
       prometheus.io/path: /metrics
       caddy: photos.${DOMAIN}
