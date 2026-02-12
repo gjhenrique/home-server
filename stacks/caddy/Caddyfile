@@ -27,6 +27,7 @@
 				regex match email {$ALLOWED_EMAILS}
 				action add role authp/user
 
+				ui link "Dashboard" https://{$DOMAIN}/ icon "las la-home"
 				ui link "Movies" https://movies.{$DOMAIN}/ icon "las la-film"
 				ui link "TV" https://tv.{$DOMAIN}/ icon "las la-tv"
 				ui link "Torrents" https://torrents.{$DOMAIN}/ icon "las la-skull-crossbones"
@@ -37,6 +38,7 @@
 				ui link "DNS" https://dns.{$DOMAIN}/ icon "las la-network-wired"
 				ui link "Backup" https://backup.{$DOMAIN}/ icon "las la-hdd"
 				ui link "Emby" https://emby.{$DOMAIN}/ icon "las la-video"
+				ui link "Kavita" https://kavita.{$DOMAIN}/ icon "las la-book"
 				ui link "Dashboards" https://grafana.{$DOMAIN}/ icon "las la-chart-line"
 			}
 		}

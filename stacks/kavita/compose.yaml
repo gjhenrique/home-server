@@ -11,8 +11,17 @@ services:
       - ${EXT_PATH}/kavita/config:/config
       - ${EXT_PATH}/media:/media
     ports:
-      - ${KAVITA_HTTP_PORT:-5001}:5000
+      - 127.0.0.1:${KAVITA_HTTP_PORT:-5001}:5000
     cpus: 1
+    labels:
+      caddy: kavita.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:${KAVITA_HTTP_PORT:-5001}"
+      homepage.group: Media
+      homepage.name: Kavita
+      homepage.icon: kavita
+      homepage.href: https://kavita.${DOMAIN}
+      homepage.description: E-book and comic reader
     logging:
       driver: "json-file"
       options:
