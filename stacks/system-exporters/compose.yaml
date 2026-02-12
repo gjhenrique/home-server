@@ -46,3 +46,20 @@ services:
       - "prometheus.io/port=9618"
       - "prometheus.io/path=/metrics"
       - "prometheus.io/address=172.17.0.1:9618"
+
+  tasmota_exporter:
+    image: eugenezadyra/tasmota-exporter:latest
+    restart: unless-stopped
+    ports:
+      - "9094:9092"
+    environment:
+      - MQTT_HOSTNAME=172.17.0.1
+      - MQTT_PORT=1883
+      - MQTT_USERNAME=${MQTT_USERNAME:-}
+      - MQTT_PASSWORD=${MQTT_PASSWORD:-}
+      - PROMETHEUS_EXPORTER_PORT=9092
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9094"
+      - "prometheus.io/path=/metrics"
+      - "prometheus.io/address=172.17.0.1:9094"
