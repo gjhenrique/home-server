@@ -50,15 +50,14 @@ services:
   tasmota_exporter:
     image: eugenezadyra/tasmota-exporter:latest
     restart: unless-stopped
-    ports:
-      - "9094:9092"
+    network_mode: host
+    # Bridge networking (172.17.0.1, 172.27.0.1) fails with "network unreachable" from this image
     environment:
-      # Use gateway of this compose's bridge network; docker0 (172.17.0.1) can be DOWN/unreachable
-      - MQTT_HOSTNAME=172.27.0.1
+      - MQTT_HOSTNAME=127.0.0.1
       - MQTT_PORT=1883
       - MQTT_USERNAME=${MQTT_USERNAME:-}
       - MQTT_PASSWORD=${MQTT_PASSWORD:-}
-      - PROMETHEUS_EXPORTER_PORT=9092
+      - PROMETHEUS_EXPORTER_PORT=9094
     labels:
       - "prometheus.io/scrape=true"
       - "prometheus.io/port=9094"
