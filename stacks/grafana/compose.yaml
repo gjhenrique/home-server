@@ -1,7 +1,7 @@
 ---
 services:
   grafana:
-    image: grafana/grafana:12.3.2
+    image: grafana/grafana:12.3.3
     network_mode: host
     restart: unless-stopped
     volumes:
