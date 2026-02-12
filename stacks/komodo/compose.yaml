@@ -1,7 +1,7 @@
 ---
 services:
   postgres:
-    image: ghcr.io/ferretdb/postgres-documentdb:16-0.106.0-ferretdb-2.5.0
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.106.0-ferretdb-2.5.0
     labels:
       komodo.skip:
     restart: unless-stopped
