@@ -1,0 +1,13 @@
+---
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.1.2
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ${EXT_PATH}/mosquitto/data:/mosquitto/data
+    environment:
+      - TZ=Europe/Berlin

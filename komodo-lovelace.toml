@@ -49,6 +49,18 @@ EXT_PATH: /mnt/tank
 """
 
 [[stack]]
+name = "lovelace-mosquitto"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/mosquitto"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+"""
+
+[[stack]]
 name = "lovelace-emby"
 tags = ["lovelace"]
 [stack.config]
