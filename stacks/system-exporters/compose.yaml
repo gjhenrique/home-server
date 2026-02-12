@@ -53,7 +53,8 @@ services:
     ports:
       - "9094:9092"
     environment:
-      - MQTT_HOSTNAME=172.17.0.1
+      # Use gateway of this compose's bridge network; docker0 (172.17.0.1) can be DOWN/unreachable
+      - MQTT_HOSTNAME=172.27.0.1
       - MQTT_PORT=1883
       - MQTT_USERNAME=${MQTT_USERNAME:-}
       - MQTT_PASSWORD=${MQTT_PASSWORD:-}
