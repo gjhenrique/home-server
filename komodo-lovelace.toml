@@ -275,6 +275,28 @@ ALERTMANAGER_CONFIG_FILE: custom/alertmanager.yml
 """
 
 [[stack]]
+name = "lovelace-n8n"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/n8n"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+N8N_ENCRYPTION_KEY: "[[N8N_ENCRYPTION_KEY]]"
+POSTGRES_USER: "[[N8N_POSTGRES_USER]]"
+POSTGRES_PASSWORD: "[[N8N_POSTGRES_PASSWORD]]"
+POSTGRES_DB: "[[N8N_POSTGRES_DB]]"
+POSTGRES_NON_ROOT_USER: "[[N8N_POSTGRES_NON_ROOT_USER]]"
+POSTGRES_NON_ROOT_PASSWORD: "[[N8N_POSTGRES_NON_ROOT_PASSWORD]]"
+
+TZ: Europe/Berlin
+"""
+
+[[stack]]
 name = "lovelace-grafana"
 tags = ["lovelace"]
 [stack.config]
