@@ -1,0 +1,41 @@
+---
+# Mere Medical – self-hosted personal health record aggregator
+# https://github.com/cfu288/mere-medical
+# PUBLIC_URL must be the full URL where the app is accessible (with https:// or http://).
+
+services:
+  app:
+    image: cfu288/mere-medical:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4200:80"
+    environment:
+      - PUBLIC_URL=${PUBLIC_URL}
+      - ONPATIENT_CLIENT_ID=${ONPATIENT_CLIENT_ID:-}
+      - ONPATIENT_CLIENT_SECRET=${ONPATIENT_CLIENT_SECRET:-}
+      - EPIC_CLIENT_ID=${EPIC_CLIENT_ID:-}
+      - EPIC_CLIENT_ID_DSTU2=${EPIC_CLIENT_ID_DSTU2:-}
+      - EPIC_CLIENT_ID_R4=${EPIC_CLIENT_ID_R4:-}
+      - EPIC_SANDBOX_CLIENT_ID=${EPIC_SANDBOX_CLIENT_ID:-}
+      - EPIC_SANDBOX_CLIENT_ID_DSTU2=${EPIC_SANDBOX_CLIENT_ID_DSTU2:-}
+      - EPIC_SANDBOX_CLIENT_ID_R4=${EPIC_SANDBOX_CLIENT_ID_R4:-}
+      - CERNER_CLIENT_ID=${CERNER_CLIENT_ID:-}
+      - VERADIGM_CLIENT_ID=${VERADIGM_CLIENT_ID:-}
+      - VA_CLIENT_ID=${VA_CLIENT_ID:-}
+      - HEALOW_CLIENT_ID=${HEALOW_CLIENT_ID:-}
+      - HEALOW_CLIENT_SECRET=${HEALOW_CLIENT_SECRET:-}
+    healthcheck:
+      test: ["CMD", "node", "/app/healthcheck.js"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    labels:
+      caddy: health.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:4200"
+      homepage.group: Health
+      homepage.name: Mere Medical
+      homepage.icon: medical-bag
+      homepage.href: https://health.${DOMAIN}
+      homepage.description: Personal health record aggregator

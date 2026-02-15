@@ -312,3 +312,18 @@ GRAFANA_ADMIN_PASSWORD: "[[GRAFANA_ADMIN_PASSWORD]]"
 
 TZ: Europe/Berlin
 """
+
+[[stack]]
+name = "lovelace-mere-medical"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/mere-medical"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+PUBLIC_URL: "https://health.[[CADDY_DOMAIN]]"
+"""
