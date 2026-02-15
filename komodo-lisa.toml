@@ -70,24 +70,6 @@ DB_PASSWORD: "[[IMMICH_DATABASE_PASSWORD]]"
 """
 
 [[stack]]
-name = "torrent"
-[stack.config]
-server = "lisa"
-repo = "gjhenrique/home-server"
-run_directory = "stacks"
-branch = "master"
-file_paths = ["torrent/compose.yaml"]
-environment = """
-EXT_PATH: /mnt/external
-DOMAIN: "[[CADDY_DOMAIN]]"
-
-TS_EXIT_NODE_IP: 100.100.45.90 # fra-0003
-TS_HOSTNAME: "[[TORRENT_TS_HOSTNAME]]"
-TS_TAG: "[[TORRENT_TS_TAG]]"
-TS_OAUTH_SECRET: "[[TORRENT_TS_OAUTH_SECRET]]"
-"""
-
-[[stack]]
 name = "actual"
 [stack.config]
 server = "lisa"
