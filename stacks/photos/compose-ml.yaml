@@ -7,7 +7,7 @@ services:
       - machine-learning
 
   machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:v2.5.5
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6
     restart: unless-stopped
     volumes:
       - ${EXT_PATH}/immich/model-cache:/cache
