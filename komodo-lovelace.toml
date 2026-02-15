@@ -170,7 +170,7 @@ server = "lovelace"
 repo = "gjhenrique/home-server"
 run_directory = "stacks"
 branch = "master"
-file_paths = ["photos-full/compose.yaml"]
+file_paths = ["photos/compose.yaml", "photos/compose-ml.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
 DOMAIN: "[[CADDY_DOMAIN]]"

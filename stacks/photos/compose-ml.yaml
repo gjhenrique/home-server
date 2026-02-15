@@ -1,0 +1,23 @@
+---
+services:
+  immich:
+    environment:
+      IMMICH_MACHINE_LEARNING_URL: http://machine-learning:3003
+    depends_on:
+      - machine-learning
+
+  machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.5
+    restart: unless-stopped
+    volumes:
+      - ${EXT_PATH}/immich/model-cache:/cache
+      - /etc/localtime:/etc/localtime:ro
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      TZ: Europe/Berlin
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8g

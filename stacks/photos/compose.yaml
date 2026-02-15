@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     ports:
       - 127.0.0.1:2283:2283
+      # API for metrics
+      - 127.0.0.1:8081:8081
     volumes:
       - ${EXT_PATH}/immich:/data
       - ${EXT_PATH}/photos:/mnt/media/photos:ro
@@ -18,6 +20,10 @@ services:
       homepage.icon: immich
       homepage.href: https://photos.${DOMAIN}
       homepage.description: Photo management
+      prometheus.io/scrape: "true"
+      prometheus.io/address: "127.0.0.1:8081"
+      prometheus.io/port: "8081"
+      prometheus.io/path: /metrics
     devices:
       - /dev/dri:/dev/dri
     environment:
@@ -27,6 +33,8 @@ services:
       DB_DATABASE_NAME: immich
       REDIS_HOSTNAME: redis
       DB_HOSTNAME: database
+      IMMICH_METRICS: "true"
+      IMMICH_TELEMETRY_INCLUDE: "all"
     depends_on:
       - redis
       - database
