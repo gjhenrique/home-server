@@ -33,7 +33,7 @@ services:
       start_period: 30s
 
   alertmanager:
-    image: prom/alertmanager:v0.31.0
+    image: prom/alertmanager:v0.31.1
     network_mode: host
     restart: unless-stopped
     volumes:
