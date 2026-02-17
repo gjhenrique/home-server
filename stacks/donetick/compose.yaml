@@ -1,0 +1,29 @@
+---
+# Donetick: task and chore management. Behind Caddy with SSO (gate only).
+# Donetick does not support remote-user header auth like Paperless; use app login (user/pass or Donetick OIDC).
+# See README for auth options.
+
+services:
+  donetick:
+    image: donetick/donetick:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:2021:2021"
+    environment:
+      - DT_ENV=selfhosted
+      - DT_SERVER_PORT=2021
+      - DT_SERVER_HOST=0.0.0.0
+      - DT_SQLITE_PATH=/donetick-data/donetick.db
+      - DT_JWT_SECRET=${DONETICK_JWT_SECRET}
+      - TZ=${TZ:-Europe/Berlin}
+    volumes:
+      - ${EXT_PATH}/donetick/data:/donetick-data
+    labels:
+      caddy: chores.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:2021"
+      homepage.group: Productivity
+      homepage.name: Donetick
+      homepage.icon: mdi-format-list-checks
+      homepage.href: https://chores.${DOMAIN}
+      homepage.description: Task and chore management

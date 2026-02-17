@@ -301,3 +301,20 @@ DOMAIN: "[[CADDY_DOMAIN]]"
 
 PUBLIC_URL: "https://health.[[CADDY_DOMAIN]]"
 """
+
+[[stack]]
+name = "lovelace-donetick"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/donetick"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+DONETICK_JWT_SECRET: "[[DONETICK_JWT_SECRET]]"
+
+TZ: Europe/Berlin
+"""
