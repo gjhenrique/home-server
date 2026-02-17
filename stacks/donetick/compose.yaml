@@ -20,7 +20,7 @@ services:
       - ${EXT_PATH}/donetick/data:/donetick-data
     labels:
       caddy: chores.${DOMAIN}
-      caddy.import: sso
+      caddy.import: only_tls
       caddy.reverse_proxy: "127.0.0.1:2021"
       homepage.group: Productivity
       homepage.name: Donetick

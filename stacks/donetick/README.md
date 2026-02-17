@@ -2,8 +2,7 @@
 
 Open-source task and chore management (natural language tasks, recurring chores, assignee rotation, points).
 
-- **Caddy** – reverse proxy at `chores.${DOMAIN}` with SSO (Google OAuth gate).
-- **Auth**: Caddy SSO is a **gate only**. Donetick does not support forward-auth/remote-user headers (unlike Paperless). After passing Caddy you sign in to Donetick with username/password, or configure Donetick’s built-in OIDC (e.g. Google) for single sign-on inside the app.
+- **Caddy** – reverse proxy at `chores.${DOMAIN}` with TLS only (no Caddy auth). Donetick handles all auth itself (username/password or its built-in OIDC).
 
 ## Paperless-style SSO (for reference)
 
