@@ -318,3 +318,18 @@ DONETICK_JWT_SECRET: "[[DONETICK_JWT_SECRET]]"
 
 TZ: Europe/Berlin
 """
+
+[[stack]]
+name = "lovelace-3dprint"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/3dprint"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+TZ: Europe/Berlin
+PORT: "8000"
+"""
