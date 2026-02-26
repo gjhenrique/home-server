@@ -36,6 +36,6 @@ services:
       caddy.reverse_proxy: "127.0.0.1:4200"
       homepage.group: Health
       homepage.name: Mere Medical
-      homepage.icon: medical-bag
+      homepage.icon: https://meremedical.co/img/logo.svg
       homepage.href: https://health.${DOMAIN}
       homepage.description: Personal health record aggregator
