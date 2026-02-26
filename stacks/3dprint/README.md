@@ -8,7 +8,7 @@ Bambuddy: print archive, monitoring, and virtual printer for Bambu Lab printers.
 |----------|--------|-------------|
 | `EXT_PATH` | No | Base path for persistent data (e.g. `/mnt/tank`). Used for `3dprinting/virtual_printer`. |
 | `TZ` | No | Timezone (e.g. `Europe/Berlin`). |
-| `PORT` | No | HTTP port for Bambuddy (default `8000`). |
+| `PORT` | No | HTTP port for Bambuddy (default `8000`). On Lovelace use `8002`; port 8000 is used by Paperless. |
 | `DOMAIN` | No | Caddy domain for reverse proxy (e.g. `bambuddy.${DOMAIN}`). |
 | `VIRTUAL_PRINTER_PASV_ADDRESS` | No | Optional: Docker host IP for FTP passive mode. Omit if not using virtual printer FTP. |
 
@@ -19,7 +19,7 @@ Bambuddy: print archive, monitoring, and virtual printer for Bambu Lab printers.
 
 ## Health / URL
 
-- **Local:** `http://<host>:8000` (or `http://<host>:${PORT}` if overridden).
+- **Local:** `http://<host>:8000` (or `http://<host>:${PORT}` if overridden; Lovelace uses port 8002).
 - **Behind Caddy:** `https://bambuddy.${DOMAIN}` (when `DOMAIN` is set and Caddy is configured).
 
 ## Prometheus

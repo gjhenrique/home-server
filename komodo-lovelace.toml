@@ -331,5 +331,5 @@ environment = """
 EXT_PATH: /mnt/tank
 DOMAIN: "[[CADDY_DOMAIN]]"
 TZ: Europe/Berlin
-PORT: "8000"
+PORT: "8002"
 """
