@@ -1,0 +1,15 @@
+services:
+  bentopdf:
+    image: ghcr.io/alam00000/bentopdf-simple:v2.3.3
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8082:8080"
+    labels:
+      caddy: pdf.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:8082"
+      homepage.group: Documents
+      homepage.name: BentoPDF
+      homepage.icon: bentopdf
+      homepage.href: https://pdf.${DOMAIN}
+      homepage.description: Privacy-first PDF toolkit

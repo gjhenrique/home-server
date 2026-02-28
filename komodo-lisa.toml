@@ -231,6 +231,17 @@ TS_ROUTES: "[[SUBNET_ROUTER_TS_ROUTES]]"
 """
 
 [[stack]]
+name = "bentopdf"
+[stack.config]
+server = "lisa"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/bentopdf"
+branch = "master"
+environment = """
+DOMAIN: "[[CADDY_DOMAIN]]"
+"""
+
+[[stack]]
 name = "homepage"
 [stack.config]
 server = "lisa"
