@@ -1,3 +1,4 @@
+---
 services:
   bentopdf:
     image: ghcr.io/alam00000/bentopdf-simple:v2.3.3
