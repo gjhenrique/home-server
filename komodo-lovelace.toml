@@ -333,3 +333,21 @@ DOMAIN: "[[CADDY_DOMAIN]]"
 TZ: Europe/Berlin
 PORT: "8002"
 """
+
+[[stack]]
+name = "lovelace-openclaw"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/openclaw"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+OPENCLAW_GATEWAY_TOKEN: "[[OPENCLAW_GATEWAY_TOKEN]]"
+OPENROUTER_API_KEY: "[[OPENROUTER_API_KEY]]"
+
+TZ: Europe/Berlin
+"""

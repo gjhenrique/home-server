@@ -1,0 +1,58 @@
+---
+# OpenClaw gateway: AI agent with WhatsApp, Telegram, OpenRouter.
+# Image: ghcr.io/openclaw/openclaw:main (pin digest for reproducibility if needed)
+# Docs: https://docs.openclaw.ai/install/docker
+
+services:
+  openclaw-gateway:
+    image: ghcr.io/openclaw/openclaw:main
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18789:18789"
+      - "127.0.0.1:18790:18790"
+    environment:
+      - HOME=/home/node
+      - TERM=xterm-256color
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - TZ=${TZ:-Europe/Berlin}
+    volumes:
+      - ${EXT_PATH}/openclaw/config:/home/node/.openclaw
+      - ${EXT_PATH}/openclaw/workspace:/home/node/.openclaw/workspace
+    command:
+      - "node"
+      - "openclaw.mjs"
+      - "gateway"
+      - "--allow-unconfigured"
+      - "--bind"
+      - "lan"
+      - "--port"
+      - "18789"
+    labels:
+      caddy: openclaw.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:18789"
+      homepage.group: AI and automation
+      homepage.name: OpenClaw
+      homepage.icon: openclaw
+      homepage.href: https://openclaw.${DOMAIN}
+      homepage.description: AI agent (WhatsApp, Telegram, OpenRouter)
+
+  # Optional: use for one-off CLI (channels login, onboard, etc.):
+  # docker compose run --rm openclaw-cli channels login
+  openclaw-cli:
+    image: ghcr.io/openclaw/openclaw:main
+    profiles:
+      - cli
+    environment:
+      - HOME=/home/node
+      - TERM=xterm-256color
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - BROWSER=echo
+    volumes:
+      - ${EXT_PATH}/openclaw/config:/home/node/.openclaw
+      - ${EXT_PATH}/openclaw/workspace:/home/node/.openclaw/workspace
+    stdin_open: true
+    tty: true
+    entrypoint: ["node", "openclaw.mjs"]

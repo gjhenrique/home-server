@@ -1,0 +1,12 @@
+{
+  "env": {
+    "OPENROUTER_API_KEY": "<set via environment or replace here>"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter/anthropic/claude-sonnet-4-5"
+      }
+    }
+  }
+}
