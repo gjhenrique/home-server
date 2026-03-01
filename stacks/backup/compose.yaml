@@ -1,7 +1,7 @@
 ---
 services:
   backrest:
-    image: docker.io/garethgeorge/backrest:v1.11.2
+    image: docker.io/garethgeorge/backrest:v1.12.0
     restart: unless-stopped
     ports:
       - 127.0.0.1:9898:9898
