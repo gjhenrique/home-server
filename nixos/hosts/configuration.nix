@@ -70,6 +70,8 @@
     };
   };
 
+  services.resolved.enable = false;
+
   networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
