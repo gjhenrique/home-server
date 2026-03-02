@@ -1,4 +1,9 @@
 {
+  "gateway": {
+    "controlUi": {
+      "allowedOrigins": ["https://openclaw.YOUR_DOMAIN"]
+    }
+  },
   "env": {
     "OPENROUTER_API_KEY": "<set via environment or replace here>"
   },

@@ -28,15 +28,17 @@ Configure these in your Komodo server (secrets or env) so the stack can start:
 
 2. **Get OpenRouter API key** from [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) and set as `OPENROUTER_API_KEY` in Komodo.
 
-3. **Create config directory** on the server (replace with your `EXT_PATH` if different):
+3. **Create config directory and `openclaw.json`** on the server (replace `/mnt/tank` with your `EXT_PATH` if different):
    ```bash
    mkdir -p /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace
+   chown -R 1000:1000 /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace
    ```
-   Optionally copy the example config and set your default model (from the stack directory on the server):
+   Copy the example config and **set your Control UI origin** (required when behind Caddy, or the gateway will refuse to start):
    ```bash
    cp openclaw.json.example /mnt/tank/openclaw/config/openclaw.json
-   # Edit openclaw.json to set agents.defaults.model.primary if desired.
-   # Prefer setting OPENROUTER_API_KEY via Komodo env; you can omit it from the file.
+   # Edit openclaw.json: replace openclaw.YOUR_DOMAIN in gateway.controlUi.allowedOrigins
+   # with your real domain, e.g. ["https://openclaw.lovelace.ts.net"]
+   # Optionally set agents.defaults.model.primary. Prefer OPENROUTER_API_KEY via Komodo env.
    ```
 
 4. **Deploy the stack** via Komodo (Sync + Deploy).
@@ -63,10 +65,24 @@ After the gateway is running:
 
 ## Telegram
 
+Telegram is configured via **config file** (not `channels add`). Add your bot token to `openclaw.json`:
+
 1. Create a bot via [@BotFather](https://t.me/BotFather) and copy the bot token.
-2. On the server, from the openclaw stack directory:
+2. On the server, edit `${EXT_PATH}/openclaw/config/openclaw.json` and add a `channels.telegram` block:
+   ```json
+   "channels": {
+     "telegram": {
+       "enabled": true,
+       "botToken": "YOUR_BOT_TOKEN",
+       "dmPolicy": "pairing"
+     }
+   }
+   ```
+   Restart the gateway: `docker restart lovelace-openclaw-openclaw-gateway-1` (or restart the stack).
+3. For first DM access, approve pairing from the server:
    ```bash
-   docker compose run --rm openclaw-cli channels add --channel telegram --token "<BOT_TOKEN>"
+   docker compose run --rm openclaw-cli pairing list telegram
+   docker compose run --rm openclaw-cli pairing approve telegram <CODE>
    ```
 
 ## CLI usage
@@ -77,8 +93,7 @@ One-off commands (channels, onboard, dashboard, etc.) use the same image with th
 # WhatsApp QR login
 docker compose run --rm openclaw-cli channels login
 
-# Add Telegram
-docker compose run --rm openclaw-cli channels add --channel telegram --token "<BOT_TOKEN>"
+# Telegram: add botToken to openclaw.json under channels.telegram, then restart gateway
 
 # Dashboard URL (e.g. to get Control UI link)
 docker compose run --rm openclaw-cli dashboard --no-open
@@ -87,6 +102,8 @@ docker compose run --rm openclaw-cli dashboard --no-open
 docker compose run --rm openclaw-cli devices list
 docker compose run --rm openclaw-cli devices approve <requestId>
 ```
+
+For automated messages to a WhatsApp group (e.g. Friday reminders, YouTube live notifications), see [docs/OPENCLAW_WHATSAPP_GROUP_AUTOMATION.md](../../docs/OPENCLAW_WHATSAPP_GROUP_AUTOMATION.md).
 
 ## OpenRouter
 
@@ -112,6 +129,7 @@ docker compose run --rm openclaw-cli devices approve <requestId>
 
 ## Troubleshooting
 
+- **502 from Caddy / gateway crash-loop**: The gateway refuses to start when bound to LAN without allowed origins. Ensure `${EXT_PATH}/openclaw/config/openclaw.json` exists and has `gateway.controlUi.allowedOrigins` set to your Control UI URL(s), e.g. `["https://openclaw.YOUR_DOMAIN"]`. Copy from `openclaw.json.example` and replace `YOUR_DOMAIN`. Then restart the stack.
 - **Unauthorized / disconnected (1008)**: Open Control UI → Settings → token and paste `OPENCLAW_GATEWAY_TOKEN` again. Get a fresh link with `docker compose run --rm openclaw-cli dashboard --no-open` if needed.
 - **Channels not receiving**: Ensure you completed WhatsApp QR login or Telegram `channels add`; credentials live in `${EXT_PATH}/openclaw/config`.
 - **Permission errors** on config/workspace: The image runs as `node` (uid 1000). Fix ownership, e.g.:
