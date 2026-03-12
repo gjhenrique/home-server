@@ -33,6 +33,7 @@
 
   services.udev.extraRules = ''
     ACTION=="add|change", ENV{ID_FS_UUID}=="5dabbf9a-135f-4efa-8293-4d2680a2dddc", ENV{ID_FS_TYPE}=="crypto_LUKS", ENV{SYSTEMD_WANTS}+="systemd-cryptsetup@backup_ext.service", TAG+="systemd"
+    ACTION=="add|change", ENV{DM_NAME}=="backup_ext", ENV{SYSTEMD_WANTS}+="mnt-backup_ext.mount", TAG+="systemd"
   '';
 
   fileSystems."/mnt/backup_ext" = {
