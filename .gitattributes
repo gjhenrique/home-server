@@ -1,2 +1,2 @@
 secrets.env filter=git-crypt diff=git-crypt
-komodo-ts.env filter=git-crypt diff=git-crypt
+*.key filter=git-crypt diff=git-crypt

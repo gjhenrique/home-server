@@ -10,6 +10,8 @@ services:
       - ${EXT_PATH}/backrest/config:/config
       - cache:/cache
       - ${EXT_PATH}:${EXT_PATH}
+      # lovelace might not have it, but wont' break it. just create an empty directory
+      - /mnt/backup_ext:/mnt/backup_ext
       # https://garethgeorge.github.io/backrest/cookbooks/ssh-remote
       - ${EXT_PATH}/backrest/ssh:/root/.ssh:ro
     environment:
