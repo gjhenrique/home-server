@@ -19,6 +19,7 @@ with lib;
     users.users.guilherme.openssh.authorizedKeys.keys = [
       "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIJukjvvy7oit8HPiS3alfmjoxLflH6cg9ZZXg2i0PApfAAAABHNzaDo= guilherme@dell"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM/HLFVWHMqNfNcN7cQrnWxgP7r8G18JTkHcaWnnavpR SSH Key"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIALVCokcHsh/mRxP92nbldzFZFWPy+OggUsZaa5uvtGt guilherme@dell"
     ];
 
     services.openssh = {
