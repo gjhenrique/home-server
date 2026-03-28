@@ -46,7 +46,7 @@ let
       filename="Scan $date.pdf"
       tmpdir="$(mktemp -d)"
       pushd "$tmpdir"
-      scanadf -d "$SCANBD_DEVICE" --source "ADF Duplex" --mode Color --resolution 300dpi
+      scanadf -d "$SCANBD_DEVICE" --source "ADF Duplex" --mode Color --resolution 300 --ald=yes --page-height 876
 
       # Convert any PNM images produced by the scan into a PDF with the date as a name
       convert image* -density 300 "$filename"
