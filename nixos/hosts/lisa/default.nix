@@ -13,6 +13,7 @@
   };
 
   users.users.guilherme.shell = pkgs.zsh;
+  users.users.guilherme.extraGroups = ["scanner"];
 
   services.tlp.enable = true;
 
