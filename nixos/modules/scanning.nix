@@ -53,7 +53,7 @@ let
       chmod 0666 "$filename"
 
       # Remove temporary PNM images
-      # rm --verbose image*
+      rm --verbose image*
 
       # Atomic move converted PDF to destination directory
       paperlessdir="/mnt/external/documents/consume/"
@@ -62,7 +62,7 @@ let
       rm "$filename"
 
       popd
-      # rm -r "$tmpdir"
+      rm -r "$tmpdir"
     '';
 in
 {
