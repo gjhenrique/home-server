@@ -45,7 +45,7 @@ services:
   # a while true is not very scalable, but it will probably do the job
   # if not, ofelia FTW
   caddy:
-    image: caddy:2.11.1
+    image: caddy:2.11.2
     restart: unless-stopped
     ports:
       - 127.0.0.1:8001:8080
