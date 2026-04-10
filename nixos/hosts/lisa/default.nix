@@ -22,24 +22,9 @@
   services.scanbd.user = "guilherme";
   services.ssh-auth.enable = true;
 
-  # Encrypted external backup disk
-  environment.etc."luks-keys/backup_ext" = {
-    source = ./backup_ext.key;
-    mode = "0400";
-  };
-
-  environment.etc.crypttab.text = ''
-    backup_ext UUID=5dabbf9a-135f-4efa-8293-4d2680a2dddc /etc/luks-keys/backup_ext nofail
-  '';
-
-  services.udev.extraRules = ''
-    ACTION=="add|change", ENV{ID_FS_UUID}=="5dabbf9a-135f-4efa-8293-4d2680a2dddc", ENV{ID_FS_TYPE}=="crypto_LUKS", ENV{SYSTEMD_WANTS}+="systemd-cryptsetup@backup_ext.service", TAG+="systemd"
-    ACTION=="add|change", ENV{DM_NAME}=="backup_ext", ENV{SYSTEMD_WANTS}+="mnt-backup_ext.mount", TAG+="systemd"
-  '';
-
   fileSystems."/mnt/backup_ext" = {
-    device = "/dev/mapper/backup_ext";
+    device = "/dev/disk/by-uuid/fc50d3fe-3ee1-4ddb-a330-8d757bd22b00";
     fsType = "ext4";
-    options = [ "nofail" ];
+    options = ["nofail"];
   };
 }
