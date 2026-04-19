@@ -1,7 +1,7 @@
 ---
 services:
   netdata:
-    image: docker.io/netdata/netdata:v2.9.0
+    image: docker.io/netdata/netdata:v2.10.2
     restart: unless-stopped
     pid: host
     network_mode: host
