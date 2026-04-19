@@ -57,8 +57,14 @@ let
 
       # Atomic move converted PDF to destination directory
       paperlessdir="/mnt/external/documents/consume/"
+      temporarydir="/mnt/external/documents/temporary/"
+
       cp -pv "$filename" $paperlessdir/"$filename".tmp &&
-      mv $paperlessdir/"$filename".tmp $paperlessdir/"$filename" &&
+      mv $paperlessdir/"$filename".tmp $paperlessdir/"$filename"
+
+      cp -pv "$filename" $temporarydir/"$filename".tmp &&
+      mv $temporarydir/"$filename".tmp $temporarydir/"$filename"
+
       rm "$filename"
 
       popd
