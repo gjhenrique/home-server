@@ -29,7 +29,7 @@ services:
       FERRETDB_POSTGRESQL_URL: postgres://${KOMODO_DB_USERNAME}:${KOMODO_DB_PASSWORD}@postgres:5432/postgres
   
   core:
-    image: ghcr.io/moghtech/komodo-core:1.19.5
+    image: ghcr.io/moghtech/komodo-core:2.1.2
     labels:
       komodo.skip:
     restart: unless-stopped
