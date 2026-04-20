@@ -9,7 +9,7 @@ services:
     container_name: mealie
     restart: unless-stopped
     ports:
-      - "127.0.0.1:9925:9000"
+      - "9925:9000"
     deploy:
       resources:
         limits:
