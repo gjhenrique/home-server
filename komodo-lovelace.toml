@@ -351,3 +351,18 @@ OPENROUTER_API_KEY: "[[OPENROUTER_API_KEY]]"
 
 TZ: Europe/Berlin
 """
+
+[[stack]]
+name = "lovelace-mealie"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/mealie"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+TZ: Europe/Berlin
+"""

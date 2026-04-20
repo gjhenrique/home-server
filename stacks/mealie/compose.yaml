@@ -1,0 +1,35 @@
+---
+# Mealie: Recipe management and meal planning. Behind Caddy with SSO.
+# Uses SQLite database (no Postgres needed for single-server deployment).
+# See: https://docs.mealie.io/documentation/getting-started/installation/sqlite/
+
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:v3.16.0
+    container_name: mealie
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9925:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+    volumes:
+      - ${EXT_PATH}/mealie/data:/app/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-Europe/Berlin}
+      - BASE_URL=https://mealie.${DOMAIN}
+      - ALLOW_SIGNUP=false
+      - DB_ENGINE=sqlite
+      - API_DOCS=false
+    labels:
+      caddy: mealie.${DOMAIN}
+      caddy.import: only_tls
+      caddy.reverse_proxy: "127.0.0.1:9925"
+      homepage.group: Food
+      homepage.name: Mealie
+      homepage.icon: mealie
+      homepage.href: https://mealie.${DOMAIN}
+      homepage.description: Recipe management and meal planning
