@@ -364,5 +364,11 @@ environment = """
 EXT_PATH: /mnt/tank
 DOMAIN: "[[CADDY_DOMAIN]]"
 
+# OpenAI/OpenRouter configuration for recipe parsing and image analysis
+MEALIE_OPENAI_KEY: "[[MEALIE_OPENAI_KEY]]"
+MEALIE_OPENAI_BASE_URL: "[[MEALIE_OPENAI_BASE_URL]]"
+MEALIE_OPENAI_MODEL: "[[MEALIE_OPENAI_MODEL]]"
+MEALIE_OPENAI_ENABLE_IMAGE_SERVICES: "[[MEALIE_OPENAI_ENABLE_IMAGE_SERVICES]]"
+
 TZ: Europe/Berlin
 """
