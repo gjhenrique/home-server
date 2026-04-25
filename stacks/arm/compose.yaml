@@ -8,6 +8,7 @@ services:
     environment:
       ARM_UID: "1000"
       ARM_GID: "1000"
+      OMDB_API_KEY: ${OMDB_API_KEY}
     volumes:
       # HACK: required "sudo chown -R 1000:100 /mnt/external/media/arm"
       - ${EXT_PATH}/media/arm:/Home/arm
@@ -16,6 +17,7 @@ services:
       - ${EXT_PATH}/media/arm/media:/home/arm/media
       - ${EXT_PATH}/media/arm/config:/etc/arm/config
       - ./arm.yaml:/etc/arm/config/arm.yaml
+      - ./inject_env.sh:/etc/my_init.d/zzz_arm_env_config.sh
     devices:
       - /dev/sr0:/dev/sr0
       - /dev/sr1:/dev/sr1

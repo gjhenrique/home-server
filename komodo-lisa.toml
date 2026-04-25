@@ -169,6 +169,8 @@ branch = "master"
 environment = """
 EXT_PATH: /mnt/external
 DOMAIN: "[[CADDY_DOMAIN]]"
+
+OMDB_API_KEY: "[[ARM_OMDB_API_KEY]]"
 """
 
 [[stack]]
