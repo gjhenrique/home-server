@@ -1,0 +1,53 @@
+---
+services:
+  mongo:
+    image: mongo:8.2.7
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    command: --quiet --wiredTigerCacheSizeGB 0.25
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DATABASE_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DATABASE_PASSWORD}
+
+  core:
+    image: ghcr.io/moghtech/komodo-core:2.1.2
+    init: true
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    env_file:
+      - compose.env
+      - secrets.env
+    ports:
+      # accessible by the outside
+      # caddy in front of it is too dangerous
+      - 9120:9120
+    volumes:
+      - keys:/config/keys
+      - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
+    environment:
+      KOMODO_DATABASE_ADDRESS: mongo:27017
+
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:2.1.2
+    init: true
+    restart: unless-stopped
+    env_file:
+      - compose.env
+      - secrets.env
+    environment:
+      PERIPHERY_PASSKEYS: ${KOMODO_PASSKEY}
+    volumes:
+      - keys:/config/keys
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/proc
+      - /etc/komodo:/etc/komodo
+
+volumes:
+  mongo-data:
+  mongo-config:
+  keys:
