@@ -1,7 +1,7 @@
 ---
 services:
   prometheus:
-    image: prom/prometheus:v3.11.1
+    image: prom/prometheus:v3.11.3
     network_mode: host
     restart: unless-stopped
     user: "65534:988"  # nobody:docker to access docker socket
