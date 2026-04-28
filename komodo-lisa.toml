@@ -9,7 +9,6 @@ resource_path = ["komodo-lisa.toml"]
 name = "lisa"
 [server.config]
 enabled = true
-address = "https://periphery:8120"
 
 [[procedure]]
 name = "Deploy stacks"
