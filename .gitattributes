@@ -1,2 +1,5 @@
 secrets.env filter=git-crypt diff=git-crypt
 secrets.*.env filter=git-crypt diff=git-crypt
+terraform/lisa/secrets.yaml filter=git-crypt diff=git-crypt
+terraform/lisa/terraform.tfstate filter=git-crypt diff=git-crypt
+terraform/lisa/terraform.tfstate.backup filter=git-crypt diff=git-crypt

@@ -52,6 +52,54 @@
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
       "resolved": "github:NixOS/nixpkgs/80d50fc87924c2a0d346372d242c27973cf8cdbf?lastModified=1750994206&narHash=sha256-3u6rEbIX9CN%2F5A5%2Fmc3u0wIO1geZ0EhjvPBXmRDHqWM%3D"
     },
+    "opentofu@1.11.6": {
+      "last_modified": "2026-04-16T08:46:55Z",
+      "resolved": "github:NixOS/nixpkgs/b86751bc4085f48661017fa226dee99fab6c651b#opentofu",
+      "source": "devbox-search",
+      "version": "1.11.6",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2q8yhgimylc6ccsjh2j9cpygfdkk441w-opentofu-1.11.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2q8yhgimylc6ccsjh2j9cpygfdkk441w-opentofu-1.11.6"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/v6bwbpix3hqpbyidqpmlazidhlhwqlbl-opentofu-1.11.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/v6bwbpix3hqpbyidqpmlazidhlhwqlbl-opentofu-1.11.6"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3iambzj17slq072w9nj6aizkl7jg3kdr-opentofu-1.11.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/3iambzj17slq072w9nj6aizkl7jg3kdr-opentofu-1.11.6"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/7ffsyb2jaw4qz9gayrjs4in8igiywypb-opentofu-1.11.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/7ffsyb2jaw4qz9gayrjs4in8igiywypb-opentofu-1.11.6"
+        }
+      }
+    },
     "restic@0.18.1": {
       "last_modified": "2025-11-25T14:41:04Z",
       "resolved": "github:NixOS/nixpkgs/dc205f7b4fdb04c8b7877b43edb7b73be7730081#restic",

@@ -1,0 +1,4 @@
+.terraform/
+*.tfplan
+crash.log
+crash.*.log
