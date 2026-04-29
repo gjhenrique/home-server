@@ -3,7 +3,7 @@
     "git-crypt@0.8.0",
     "opentofu@1.11.6",
     "restic@0.18.1",
-    "yq-go@4.52.5",
+    "yq-go@4.53.2",
   ],
   "shell": {
     "scripts": {
