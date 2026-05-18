@@ -22,6 +22,7 @@ locals {
     "dvd",
     "emby",
     "ha",
+    "komodo",
     "pdf",
     "photos",
     "scan",
