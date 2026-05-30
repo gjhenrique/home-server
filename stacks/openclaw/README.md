@@ -28,16 +28,16 @@ Configure these in your Komodo server (secrets or env) so the stack can start:
 
 2. **Get OpenRouter API key** from [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) and set as `OPENROUTER_API_KEY` in Komodo.
 
-3. **Create config directory and `openclaw.json`** on the server (replace `/mnt/tank` with your `EXT_PATH` if different):
+3. **Create config directories** on the server (replace `/mnt/tank` with your `EXT_PATH` if different):
    ```bash
-   mkdir -p /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace
-   chown -R 1000:1000 /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace
+   mkdir -p /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace /mnt/tank/openclaw/auth-secrets
+   chown -R 1000:1000 /mnt/tank/openclaw/config /mnt/tank/openclaw/workspace /mnt/tank/openclaw/auth-secrets
    ```
    Copy the example config and **set your Control UI origin** (required when behind Caddy, or the gateway will refuse to start):
    ```bash
    cp openclaw.json.example /mnt/tank/openclaw/config/openclaw.json
-   # Edit openclaw.json: replace openclaw.YOUR_DOMAIN in gateway.controlUi.allowedOrigins
-   # with your real domain, e.g. ["https://openclaw.lovelace.ts.net"]
+   # Edit openclaw.json: set gateway.mode=local, gateway.bind=lan, and replace
+   # openclaw.YOUR_DOMAIN in gateway.controlUi.allowedOrigins (e.g. ["https://openclaw.lovelace.ts.net"])
    # Optionally set agents.defaults.model.primary. Prefer OPENROUTER_API_KEY via Komodo env.
    ```
 
@@ -48,7 +48,7 @@ Configure these in your Komodo server (secrets or env) so the stack can start:
 6. **(Optional) Run onboarding** to register OpenRouter in OpenClaw (if not using `openclaw.json`):
    From the server, in the stack directory (e.g. where Komodo deploys the stack):
    ```bash
-   docker compose run --rm openclaw-cli onboard --auth-choice apiKey --token-provider openrouter --token "$OPENROUTER_API_KEY"
+   docker compose --profile cli run --rm openclaw-cli onboard --auth-choice apiKey --token-provider openrouter --token "$OPENROUTER_API_KEY"
    ```
    Use the same env Komodo injects (or pass vars manually).
 
@@ -58,7 +58,7 @@ After the gateway is running:
 
 1. On the server, from the openclaw stack directory:
    ```bash
-   docker compose run --rm openclaw-cli channels login
+   docker compose --profile cli run --rm openclaw-cli channels login
    ```
 2. Follow the QR flow (e.g. WhatsApp → Linked devices → Link a device) and scan the QR shown in the terminal.
 3. Credentials are stored in the mounted config; no need to repeat unless you log out.
@@ -81,26 +81,30 @@ Telegram is configured via **config file** (not `channels add`). Add your bot to
    Restart the gateway: `docker restart lovelace-openclaw-openclaw-gateway-1` (or restart the stack).
 3. For first DM access, approve pairing from the server:
    ```bash
-   docker compose run --rm openclaw-cli pairing list telegram
-   docker compose run --rm openclaw-cli pairing approve telegram <CODE>
+   docker compose --profile cli run --rm openclaw-cli pairing list telegram
+   docker compose --profile cli run --rm openclaw-cli pairing approve telegram <CODE>
    ```
+
+## Gateway process (Docker)
+
+The gateway container runs `gateway run` in the **foreground** as the main process (under `tini`). That is the correct pattern for Docker: use `docker compose up -d` to detach the *container*, not `gateway start` (which targets systemd/launchd on the host).
 
 ## CLI usage
 
-One-off commands (channels, onboard, dashboard, etc.) use the same image with the same env and mounts. From the **stack directory on the server** (so Komodo env is available to Compose):
+One-off commands (channels, onboard, dashboard, etc.) use the `cli` profile and share the gateway network (`ws://127.0.0.1:18789`). From the **stack directory on the server** (gateway must already be running):
 
 ```bash
 # WhatsApp QR login
-docker compose run --rm openclaw-cli channels login
+docker compose --profile cli run --rm openclaw-cli channels login
 
 # Telegram: add botToken to openclaw.json under channels.telegram, then restart gateway
 
 # Dashboard URL (e.g. to get Control UI link)
-docker compose run --rm openclaw-cli dashboard --no-open
+docker compose --profile cli run --rm openclaw-cli dashboard --no-open
 
 # List / approve devices
-docker compose run --rm openclaw-cli devices list
-docker compose run --rm openclaw-cli devices approve <requestId>
+docker compose --profile cli run --rm openclaw-cli devices list
+docker compose --profile cli run --rm openclaw-cli devices approve <requestId>
 ```
 
 For automated messages to a WhatsApp group (e.g. Friday reminders, YouTube live notifications), see [docs/OPENCLAW_WHATSAPP_GROUP_AUTOMATION.md](../../docs/OPENCLAW_WHATSAPP_GROUP_AUTOMATION.md).
@@ -130,7 +134,8 @@ For automated messages to a WhatsApp group (e.g. Friday reminders, YouTube live 
 ## Troubleshooting
 
 - **502 from Caddy / gateway crash-loop**: The gateway refuses to start when bound to LAN without allowed origins. Ensure `${EXT_PATH}/openclaw/config/openclaw.json` exists and has `gateway.controlUi.allowedOrigins` set to your Control UI URL(s), e.g. `["https://openclaw.YOUR_DOMAIN"]`. Copy from `openclaw.json.example` and replace `YOUR_DOMAIN`. Then restart the stack.
-- **Unauthorized / disconnected (1008)**: Open Control UI → Settings → token and paste `OPENCLAW_GATEWAY_TOKEN` again. Get a fresh link with `docker compose run --rm openclaw-cli dashboard --no-open` if needed.
+- **Unauthorized / disconnected (1008)**: Open Control UI → Settings → token and paste `OPENCLAW_GATEWAY_TOKEN` again. Get a fresh link with `docker compose --profile cli run --rm openclaw-cli dashboard --no-open` if needed.
+- **Gateway exits immediately / "gateway.mode=local"**: Ensure `openclaw.json` includes `"gateway": { "mode": "local", "bind": "lan", ... }` (see `openclaw.json.example`). Do not rely on `--allow-unconfigured` in production.
 - **Channels not receiving**: Ensure you completed WhatsApp QR login or Telegram `channels add`; credentials live in `${EXT_PATH}/openclaw/config`.
 - **Permission errors** on config/workspace: The image runs as `node` (uid 1000). Fix ownership, e.g.:
   ```bash

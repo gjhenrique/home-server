@@ -1,33 +1,67 @@
 ---
 # OpenClaw gateway: AI agent with WhatsApp, Telegram, OpenRouter.
-# Image: ghcr.io/openclaw/openclaw:main (pin digest for reproducibility if needed)
+# Image: ghcr.io/openclaw/openclaw (pin tag; digest optional for reproducibility)
 # Docs: https://docs.openclaw.ai/install/docker
+
+x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.5.27
+
+x-openclaw-env: &openclaw-env
+  HOME: /home/node
+  OPENCLAW_HOME: /home/node
+  TERM: xterm-256color
+  # Pin container paths so host paths from Komodo/.env cannot leak (#77436).
+  OPENCLAW_STATE_DIR: /home/node/.openclaw
+  OPENCLAW_CONFIG_PATH: /home/node/.openclaw/openclaw.json
+  OPENCLAW_CONFIG_DIR: /home/node/.openclaw
+  OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
+  OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+  TZ: ${TZ:-Europe/Berlin}
+  # Bonjour/mDNS usually fails on bridge networks; empty = auto-disable in containers.
+  OPENCLAW_DISABLE_BONJOUR: ${OPENCLAW_DISABLE_BONJOUR:-1}
+
+x-openclaw-volumes: &openclaw-volumes
+  - ${EXT_PATH}/openclaw/config:/home/node/.openclaw
+  - ${EXT_PATH}/openclaw/workspace:/home/node/.openclaw/workspace
+  - ${EXT_PATH}/openclaw/auth-secrets:/home/node/.config/openclaw
 
 services:
   openclaw-gateway:
-    image: ghcr.io/openclaw/openclaw:2026.5.27
+    image: *openclaw-image
     restart: unless-stopped
+    init: true
     ports:
       - "127.0.0.1:18789:18789"
       - "127.0.0.1:18790:18790"
-    environment:
-      - HOME=/home/node
-      - TERM=xterm-256color
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - TZ=${TZ:-Europe/Berlin}
-    volumes:
-      - ${EXT_PATH}/openclaw/config:/home/node/.openclaw
-      - ${EXT_PATH}/openclaw/workspace:/home/node/.openclaw/workspace
+    environment: *openclaw-env
+    volumes: *openclaw-volumes
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true
+    # Foreground gateway (PID 1 child under tini). Do not use `gateway start` (systemd).
     command:
-      - "node"
-      - "openclaw.mjs"
-      - "gateway"
-      - "--allow-unconfigured"
-      - "--bind"
-      - "lan"
-      - "--port"
+      - node
+      - openclaw.mjs
+      - gateway
+      - run
+      - --bind
+      - lan
+      - --port
       - "18789"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:18789/healthz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     labels:
       caddy: openclaw.${DOMAIN}
       caddy.import: sso
@@ -38,21 +72,3 @@ services:
       homepage.href: https://openclaw.${DOMAIN}
       homepage.description: AI agent (WhatsApp, Telegram, OpenRouter)
 
-  # Optional: use for one-off CLI (channels login, onboard, etc.):
-  # docker compose run --rm openclaw-cli channels login
-  openclaw-cli:
-    image: ghcr.io/openclaw/openclaw:main
-    profiles:
-      - cli
-    environment:
-      - HOME=/home/node
-      - TERM=xterm-256color
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - BROWSER=echo
-    volumes:
-      - ${EXT_PATH}/openclaw/config:/home/node/.openclaw
-      - ${EXT_PATH}/openclaw/workspace:/home/node/.openclaw/workspace
-    stdin_open: true
-    tty: true
-    entrypoint: ["node", "openclaw.mjs"]
