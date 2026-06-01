@@ -168,6 +168,7 @@ branch = "master"
 environment = """
 EXT_PATH: /mnt/external
 DOMAIN: "[[CADDY_DOMAIN]]"
+MAKEMKV_PERMA_KEY: "[[ARM_MAKEMKV_PERMA_KEY]]"
 """
 
 [[stack]]
