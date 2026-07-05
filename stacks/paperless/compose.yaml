@@ -13,6 +13,8 @@ services:
       - 127.0.0.1:8000:8000
     depends_on:
       - broker
+      - gotenberg
+      - tika
     volumes:
       - ${EXT_PATH}/documents/data:/usr/src/paperless/data
       - ${EXT_PATH}/documents/media:/usr/src/paperless/media
@@ -29,6 +31,10 @@ services:
       PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: true
       # Trust proxy so X-Forwarded-For is used; required when behind Caddy so API token login works
       PAPERLESS_TRUSTED_PROXIES: "127.0.0.1 172.17.0.0/16 172.18.0.0/16"
+      # Tika/Gotenberg parse eml files from the IMAP integration
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_URL: http://gotenberg:3000
+      PAPERLESS_TIKA_URL: http://tika:9998
     labels:
       caddy: docs.${DOMAIN}
       caddy.import: ${PAPERLESS_CADDY_IMPORT:-only_tls}
@@ -38,6 +44,20 @@ services:
       homepage.icon: paperless-ngx
       homepage.href: https://docs.${DOMAIN}
       homepage.description: Document management
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.34.0
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: docker.io/apache/tika:3.3.1.0
+    restart: unless-stopped
 
   # paperless takes some minutes to index the scanned file
   # but sometimes I just want a document right away
