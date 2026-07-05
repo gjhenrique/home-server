@@ -6,6 +6,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Legacy iptables modules for the tailscale container
+  # (nftables-only kernel breaks its iptables firewall mode)
+  boot.kernelModules = ["ip_tables" "iptable_filter" "iptable_nat" "ip6_tables" "ip6table_filter" "ip6table_nat"];
+
   # Tailscale subnet router configuration
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
