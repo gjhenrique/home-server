@@ -25,6 +25,9 @@ services:
       PAPERLESS_URL: "${PAPERLESS_URL}"
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_OCR_LANGUAGES: "deu eng"
+      # Some scanner PDFs make ghostscript's PDF/A conversion fail hard
+      # (Error: /undefined in --runpdf--); store them anyway
+      PAPERLESS_OCR_USER_ARGS: '{"continue_on_soft_render_error": true}'
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_ENABLE_HTTP_REMOTE_USER_API: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_X_TOKEN_USER_EMAIL
