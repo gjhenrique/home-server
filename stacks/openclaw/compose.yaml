@@ -3,7 +3,7 @@
 # Image: ghcr.io/openclaw/openclaw (pin tag; digest optional for reproducibility)
 # Docs: https://docs.openclaw.ai/install/docker
 
-x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.6.11
+x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.7.1-beta.6
 
 x-openclaw-env: &openclaw-env
   HOME: /home/node
