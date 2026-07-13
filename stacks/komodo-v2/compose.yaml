@@ -44,6 +44,8 @@ services:
 
       # Adding secrets explicitly in order to call different secrets files
       # No env_file to not give preference to secrets.lisa.env or secrets.lovelace.env
+      KOMODO_DATABASE_USERNAME: ${KOMODO_DATABASE_USERNAME}
+      KOMODO_DATABASE_PASSWORD: ${KOMODO_DATABASE_PASSWORD}
       KOMODO_WEBHOOK_SECRET: ${KOMODO_WEBHOOK_SECRET}
       KOMODO_WEBHOOK_BASE_URL: ${KOMODO_WEBHOOK_BASE_URL} 
       KOMODO_JWT_SECRET: ${KOMODO_JWT_SECRET}
@@ -72,6 +74,8 @@ services:
     depends_on:
       - core
     env_file: ./compose.env
+    security_opt:
+      - apparmor=docker-komodo-periphery
     volumes:
       ## Attach the Core / Periphery communication keys
       - keys:/config/keys
