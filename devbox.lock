@@ -100,51 +100,51 @@
         }
       }
     },
-    "restic@0.18.1": {
-      "last_modified": "2025-11-25T14:41:04Z",
-      "resolved": "github:NixOS/nixpkgs/dc205f7b4fdb04c8b7877b43edb7b73be7730081#restic",
+    "restic@0.19.1": {
+      "last_modified": "2026-07-23T05:10:05Z",
+      "resolved": "github:NixOS/nixpkgs/7525d999cd850b9a488817abc89c75dc733acf17#restic",
       "source": "devbox-search",
-      "version": "0.18.1",
+      "version": "0.19.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/s43sz83czkfciqfasi20ihadh8zp7v5w-restic-0.18.1",
+              "path": "/nix/store/4hls20ra9x5znzv2c0kl8p6pvb40ni66-restic-0.19.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/s43sz83czkfciqfasi20ihadh8zp7v5w-restic-0.18.1"
+          "store_path": "/nix/store/4hls20ra9x5znzv2c0kl8p6pvb40ni66-restic-0.19.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/bgivc6mk2d5y7hw0fk4ki2cf7nppki1r-restic-0.18.1",
+              "path": "/nix/store/dq2iz3m7bhw08q8f0gxrd6dvig2l21h1-restic-0.19.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/bgivc6mk2d5y7hw0fk4ki2cf7nppki1r-restic-0.18.1"
+          "store_path": "/nix/store/dq2iz3m7bhw08q8f0gxrd6dvig2l21h1-restic-0.19.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/bkh34wzvxsq0xppm7r0bhia06wkbs3kg-restic-0.18.1",
+              "path": "/nix/store/vpzaazwbzg9fm09d0vnd44hal1p18k37-restic-0.19.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/bkh34wzvxsq0xppm7r0bhia06wkbs3kg-restic-0.18.1"
+          "store_path": "/nix/store/vpzaazwbzg9fm09d0vnd44hal1p18k37-restic-0.19.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/zcw3valrl0cvy2pbl6vmv7d7g037gl7r-restic-0.18.1",
+              "path": "/nix/store/bnp1g9ksgdgdr8w9p506jrac0397q5qb-restic-0.19.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/zcw3valrl0cvy2pbl6vmv7d7g037gl7r-restic-0.18.1"
+          "store_path": "/nix/store/bnp1g9ksgdgdr8w9p506jrac0397q5qb-restic-0.19.1"
         }
       }
     },
