@@ -1,0 +1,88 @@
+---
+services:
+  ghostfolio:
+    image: docker.io/ghostfolio/ghostfolio:3.5.0
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      ACCESS_TOKEN_SALT: ${GHOSTFOLIO_ACCESS_TOKEN_SALT}
+      DATABASE_URL: postgresql://${GHOSTFOLIO_POSTGRES_USER}:${GHOSTFOLIO_POSTGRES_PASSWORD}@postgres:5432/${GHOSTFOLIO_POSTGRES_DB}?connect_timeout=300
+      JWT_SECRET_KEY: ${GHOSTFOLIO_JWT_SECRET_KEY}
+      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB}
+      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${GHOSTFOLIO_REDIS_PASSWORD}
+      REDIS_PORT: 6379
+      ROOT_URL: https://ghostfolio.${DOMAIN}
+      TRUST_PROXY: "1"
+    ports:
+      - "127.0.0.1:3333:3333"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3333/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      caddy: ghostfolio.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:3333"
+      homepage.group: Finance
+      homepage.name: Ghostfolio
+      homepage.icon: mdi-chart-line
+      homepage.href: https://ghostfolio.${DOMAIN}
+      homepage.description: Investment portfolio tracker
+
+  postgres:
+    image: docker.io/library/postgres:15-alpine
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB}
+      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d \"$${POSTGRES_DB}\" -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ${EXT_PATH}/ghostfolio/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: docker.io/library/redis:7-alpine
+    restart: unless-stopped
+    user: "999:1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      REDIS_PASSWORD: ${GHOSTFOLIO_REDIS_PASSWORD}
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --pass \"$${REDIS_PASSWORD}\" ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

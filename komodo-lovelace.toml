@@ -186,6 +186,39 @@ PAPERLESS_URL: "[[PAPERLESS_URL]]"
 """
 
 [[stack]]
+name = "lovelace-actual"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/actual"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+"""
+
+[[stack]]
+name = "lovelace-ghostfolio"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/ghostfolio"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+
+GHOSTFOLIO_POSTGRES_DB: ghostfolio-db
+GHOSTFOLIO_POSTGRES_USER: ghostfolio
+GHOSTFOLIO_POSTGRES_PASSWORD: "[[GHOSTFOLIO_POSTGRES_PASSWORD]]"
+GHOSTFOLIO_REDIS_PASSWORD: "[[GHOSTFOLIO_REDIS_PASSWORD]]"
+GHOSTFOLIO_ACCESS_TOKEN_SALT: "[[GHOSTFOLIO_ACCESS_TOKEN_SALT]]"
+GHOSTFOLIO_JWT_SECRET_KEY: "[[GHOSTFOLIO_JWT_SECRET_KEY]]"
+"""
+
+[[stack]]
 name = "lovelace-system-exporters"
 tags = ["lovelace"]
 [stack.config]
