@@ -1,7 +1,7 @@
 ---
 services:
   ghostfolio:
-    image: docker.io/ghostfolio/ghostfolio:3.5.0
+    image: docker.io/ghostfolio/ghostfolio:3.47.0
     restart: unless-stopped
     init: true
     cap_drop:
