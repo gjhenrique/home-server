@@ -4,9 +4,9 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOTOOLCHAIN=auto xcaddy build \
-    --with github.com/greenpau/caddy-security@v1.1.31 \
-    --with github.com/caddy-dns/cloudflare@v0.2.2 \
-    --with github.com/lucaslorentz/caddy-docker-proxy/v2@v2.10.0
+    --with github.com/greenpau/caddy-security@v1.1.64 \
+    --with github.com/caddy-dns/cloudflare@v0.2.4 \
+    --with github.com/lucaslorentz/caddy-docker-proxy/v2@v2.13.1
 
 FROM caddy:2.11.4
 
