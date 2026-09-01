@@ -68,7 +68,7 @@ services:
   ## or deploy the Periphery binary with systemd using 
   ## https://github.com/moghtech/komodo/tree/main/scripts
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery:2.1.2
+    image: ghcr.io/moghtech/komodo-periphery:2.3.3
     init: true
     restart: unless-stopped
     depends_on:
