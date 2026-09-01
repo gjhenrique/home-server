@@ -4,7 +4,8 @@
     "bind": "lan",
     "controlUi": {
       "allowedOrigins": ["https://openclaw.YOUR_DOMAIN"]
-    }
+    },
+    "trustedProxies": ["192.168.144.1"]
   },
   "env": {
     "OPENROUTER_API_KEY": "<set via environment or replace here>"
