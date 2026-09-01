@@ -52,9 +52,39 @@ Configure these in your Komodo server (secrets or env) so the stack can start:
    ```
    Use the same env Komodo injects (or pass vars manually).
 
+## Upgrading (image + WhatsApp plugin)
+
+WhatsApp is an **external plugin** (`@openclaw/whatsapp`). It is not bundled in the core image, so bumping OpenClaw without updating the plugin leaves a host/plugin mismatch that can hang or crash the gateway.
+
+1. **Backup** `${EXT_PATH}/openclaw/config` (at least `openclaw.json` and plugin/state dirs).
+2. **Deploy** this stack so the gateway image is `ghcr.io/openclaw/openclaw:2026.8.1` (Komodo Sync + Deploy, or `docker compose pull && docker compose up -d`).
+3. **Update the WhatsApp plugin to the same version**, then restart the gateway. From the stack directory on the server (gateway must be running):
+   ```bash
+   docker compose --profile cli run --rm openclaw-cli plugins update @openclaw/whatsapp@2026.8.1 --accept-capabilities
+   docker compose --profile cli run --rm openclaw-cli plugins enable whatsapp --accept-capabilities
+   docker restart lovelace-openclaw-openclaw-gateway-1
+   ```
+   If `plugins update` says the plugin is not installed yet:
+   ```bash
+   docker compose --profile cli run --rm openclaw-cli plugins install @openclaw/whatsapp@2026.8.1 --accept-capabilities
+   ```
+4. **Confirm versions** (both should report `2026.8.1`):
+   ```bash
+   docker compose --profile cli run --rm openclaw-cli --version
+   docker compose --profile cli run --rm openclaw-cli plugins list
+   docker compose --profile cli run --rm openclaw-cli channels status
+   ```
+5. If the gateway crash-loops after the image bump, keep the mounted state and run doctor against it, then start the gateway again:
+   ```bash
+   docker compose run --rm --no-deps --entrypoint node openclaw-gateway dist/index.js doctor --fix
+   docker compose up -d openclaw-gateway
+   ```
+
+`--accept-capabilities` records consent for the plugin's capability surface. Skipping it is a known 2026.7 → 2026.8 failure mode: the core update succeeds, WhatsApp stays on 2026.7.x, and the gateway later fails to load the channel.
+
 ## WhatsApp
 
-After the gateway is running:
+WhatsApp is installed as `@openclaw/whatsapp` (pin it to the same version as the gateway image). After the gateway is running:
 
 1. On the server, from the openclaw stack directory:
    ```bash
@@ -87,7 +117,7 @@ Telegram is configured via **config file** (not `channels add`). Add your bot to
 
 ## Gateway process (Docker)
 
-The gateway container runs `gateway run` in the **foreground** as the main process (under `tini`). That is the correct pattern for Docker: use `docker compose up -d` to detach the *container*, not `gateway start` (which targets systemd/launchd on the host).
+The gateway container runs `gateway` in the **foreground** as the main process (under `tini`). That is the correct pattern for Docker: use `docker compose up -d` to detach the *container*, not `gateway start` (which targets systemd/launchd on the host).
 
 ## CLI usage
 
@@ -133,6 +163,7 @@ For automated messages to a WhatsApp group (e.g. Friday reminders, YouTube live 
 
 ## Troubleshooting
 
+- **WhatsApp missing / "requires capability consent" / plugin version drift**: Core and `@openclaw/whatsapp` must match. Re-run the plugin update in [Upgrading](#upgrading-image--whatsapp-plugin) with `--accept-capabilities`, then restart the gateway. `plugins enable whatsapp --accept-capabilities` alone does **not** bump the plugin version.
 - **502 from Caddy / gateway crash-loop**: The gateway refuses to start when bound to LAN without allowed origins. Ensure `${EXT_PATH}/openclaw/config/openclaw.json` exists and has `gateway.controlUi.allowedOrigins` set to your Control UI URL(s), e.g. `["https://openclaw.YOUR_DOMAIN"]`. Copy from `openclaw.json.example` and replace `YOUR_DOMAIN`. Then restart the stack.
 - **Unauthorized / disconnected (1008)**: Open Control UI → Settings → token and paste `OPENCLAW_GATEWAY_TOKEN` again. Get a fresh link with `docker compose --profile cli run --rm openclaw-cli dashboard --no-open` if needed.
 - **Gateway exits immediately / "gateway.mode=local"**: Ensure `openclaw.json` includes `"gateway": { "mode": "local", "bind": "lan", ... }` (see `openclaw.json.example`). Do not rely on `--allow-unconfigured` in production.

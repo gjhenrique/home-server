@@ -2,8 +2,9 @@
 # OpenClaw gateway: AI agent with WhatsApp, Telegram, OpenRouter.
 # Image: ghcr.io/openclaw/openclaw (pin tag; digest optional for reproducibility)
 # Docs: https://docs.openclaw.ai/install/docker
+# After bumping the image, update @openclaw/whatsapp to the same version (see README).
 
-x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.7.1-beta.6
+x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.8.1
 
 x-openclaw-env: &openclaw-env
   HOME: /home/node
@@ -45,9 +46,8 @@ services:
     # Foreground gateway (PID 1 child under tini). Do not use `gateway start` (systemd).
     command:
       - node
-      - openclaw.mjs
+      - dist/index.js
       - gateway
-      - run
       - --bind
       - lan
       - --port
@@ -56,8 +56,7 @@ services:
       test:
         - CMD
         - node
-        - -e
-        - "fetch('http://127.0.0.1:18789/healthz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        - dist/docker-healthcheck.js
       interval: 30s
       timeout: 5s
       retries: 5
@@ -71,4 +70,26 @@ services:
       homepage.icon: openclaw
       homepage.href: https://openclaw.${DOMAIN}
       homepage.description: AI agent (WhatsApp, Telegram, OpenRouter)
+
+  # One-off CLI (channels, plugins, doctor). Shares the gateway network namespace.
+  # Komodo `up -d` ignores this profile; use: docker compose --profile cli run --rm openclaw-cli ...
+  openclaw-cli:
+    image: *openclaw-image
+    profiles: ["cli"]
+    network_mode: "service:openclaw-gateway"
+    environment:
+      <<: *openclaw-env
+      BROWSER: echo
+    volumes: *openclaw-volumes
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true
+    stdin_open: true
+    tty: true
+    init: true
+    entrypoint: ["node", "dist/index.js"]
+    depends_on:
+      - openclaw-gateway
 
