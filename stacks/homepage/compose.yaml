@@ -1,7 +1,7 @@
 ---
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:v1.13.2
+    image: ghcr.io/gethomepage/homepage:v2.2.0
     restart: unless-stopped
     ports:
       - "127.0.0.1:3001:3000"
