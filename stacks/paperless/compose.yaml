@@ -49,7 +49,7 @@ services:
       homepage.description: Document management
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.34.0
+    image: docker.io/gotenberg/gotenberg:8.36.0
     restart: unless-stopped
     # The gotenberg chromium route is used to convert .eml files. We do not
     # want to allow external content like tracking pixels or even javascript.
