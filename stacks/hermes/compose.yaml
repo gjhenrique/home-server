@@ -2,8 +2,6 @@
 # Keep the image on a tested release tag; update it after backing up /opt/data.
 # Docs: https://hermes-agent.nousresearch.com/docs/user-guide/docker
 
-x-hermes-image: &hermes-image nousresearch/hermes-agent:v2026.9.14@sha256:99641e57ec762c59e54cb44aa6746b7fc68c18b3c5ddb088af54234c613d9294
-
 x-hermes-environment: &hermes-environment
   HERMES_UID: ${HERMES_UID:-10000}
   HERMES_GID: ${HERMES_GID:-10000}
@@ -16,7 +14,7 @@ x-hermes-volumes: &hermes-volumes
 
 services:
   hermes-gateway:
-    image: *hermes-image
+    image: nousresearch/hermes-agent:v2026.9.14@sha256:99641e57ec762c59e54cb44aa6746b7fc68c18b3c5ddb088af54234c613d9294
     restart: unless-stopped
     network_mode: host
     command: ["gateway", "run"]
