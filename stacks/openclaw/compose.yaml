@@ -4,7 +4,7 @@
 # Docs: https://docs.openclaw.ai/install/docker
 # After bumping the image, update @openclaw/whatsapp to the same version (see README).
 
-x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.8.1
+x-openclaw-image: &openclaw-image ghcr.io/openclaw/openclaw:2026.9.7
 
 x-openclaw-env: &openclaw-env
   HOME: /home/node
