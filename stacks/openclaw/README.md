@@ -57,18 +57,18 @@ Configure these in your Komodo server (secrets or env) so the stack can start:
 WhatsApp is an **external plugin** (`@openclaw/whatsapp`). It is not bundled in the core image, so bumping OpenClaw without updating the plugin leaves a host/plugin mismatch that can hang or crash the gateway.
 
 1. **Backup** `${EXT_PATH}/openclaw/config` (at least `openclaw.json` and plugin/state dirs).
-2. **Deploy** this stack so the gateway image is `ghcr.io/openclaw/openclaw:2026.8.1` (Komodo Sync + Deploy, or `docker compose pull && docker compose up -d`).
+2. **Deploy** this stack so the gateway image is `ghcr.io/openclaw/openclaw:2026.9.7` (Komodo Sync + Deploy, or `docker compose pull && docker compose up -d`).
 3. **Update the WhatsApp plugin to the same version**, then restart the gateway. From the stack directory on the server (gateway must be running):
    ```bash
-   docker compose --profile cli run --rm openclaw-cli plugins update @openclaw/whatsapp@2026.8.1 --accept-capabilities
+   docker compose --profile cli run --rm openclaw-cli plugins update @openclaw/whatsapp@2026.9.7 --accept-capabilities
    docker compose --profile cli run --rm openclaw-cli plugins enable whatsapp --accept-capabilities
    docker restart lovelace-openclaw-openclaw-gateway-1
    ```
    If `plugins update` says the plugin is not installed yet:
    ```bash
-   docker compose --profile cli run --rm openclaw-cli plugins install @openclaw/whatsapp@2026.8.1 --accept-capabilities
+   docker compose --profile cli run --rm openclaw-cli plugins install @openclaw/whatsapp@2026.9.7 --accept-capabilities
    ```
-4. **Confirm versions** (both should report `2026.8.1`):
+4. **Confirm versions** (both should report `2026.9.7`):
    ```bash
    docker compose --profile cli run --rm openclaw-cli --version
    docker compose --profile cli run --rm openclaw-cli plugins list
