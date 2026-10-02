@@ -1,0 +1,38 @@
+# Hermes Agent gateway with a protected dashboard behind Caddy SSO.
+# Keep the image on a tested release tag; update it after backing up /opt/data.
+# Docs: https://hermes-agent.nousresearch.com/docs/user-guide/docker
+
+x-hermes-image: &hermes-image nousresearch/hermes-agent:v2026.9.14@sha256:99641e57ec762c59e54cb44aa6746b7fc68c18b3c5ddb088af54234c613d9294
+
+x-hermes-environment: &hermes-environment
+  HERMES_UID: ${HERMES_UID:-10000}
+  HERMES_GID: ${HERMES_GID:-10000}
+  HERMES_DASHBOARD: "1"
+  HERMES_DASHBOARD_HOST: 127.0.0.1
+  TZ: ${TZ:-Europe/Berlin}
+
+x-hermes-volumes: &hermes-volumes
+  - ${EXT_PATH}/hermes:/opt/data
+
+services:
+  hermes-gateway:
+    image: *hermes-image
+    restart: unless-stopped
+    network_mode: host
+    command: ["gateway", "run"]
+    environment: *hermes-environment
+    volumes: *hermes-volumes
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      caddy: hermes.${DOMAIN}
+      caddy.import: sso
+      caddy.reverse_proxy: "127.0.0.1:9119"
+      homepage.group: AI and automation
+      homepage.name: Hermes
+      homepage.icon: hermes
+      homepage.href: https://hermes.${DOMAIN}
+      homepage.description: AI agent gateway and dashboard

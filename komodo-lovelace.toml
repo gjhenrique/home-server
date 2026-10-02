@@ -386,6 +386,20 @@ TZ: Europe/Berlin
 """
 
 [[stack]]
+name = "lovelace-hermes"
+tags = ["lovelace"]
+[stack.config]
+server = "lovelace"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/hermes"
+branch = "master"
+environment = """
+EXT_PATH: /mnt/tank
+DOMAIN: "[[CADDY_DOMAIN]]"
+TZ: Europe/Berlin
+"""
+
+[[stack]]
 name = "lovelace-mealie"
 tags = ["lovelace"]
 [stack.config]
