@@ -40,7 +40,8 @@ executions = [
 name = "Deploy stacks"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "*", enabled = true }
+  # Explicit list keeps lovelace-openclaw disabled; add new Lovelace stacks here.
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "lovelace-syncthing,lovelace-mosquitto,lovelace-emby,lovelace-subnet-router,lovelace-caddy,lovelace-homepage,lovelace-samba,lovelace-photos,lovelace-paperless,lovelace-actual,lovelace-ghostfolio,lovelace-system-exporters,lovelace-health-exporters,lovelace-backup,lovelace-prometheus,lovelace-n8n,lovelace-grafana,lovelace-mere-medical,lovelace-donetick,lovelace-3dprint,lovelace-hermes,lovelace-mealie", enabled = true }
 ]
 
 [[stack]]
@@ -370,6 +371,7 @@ PORT: "8002"
 [[stack]]
 name = "lovelace-openclaw"
 tags = ["lovelace"]
+deploy = false
 [stack.config]
 server = "lovelace"
 repo = "gjhenrique/home-server"
