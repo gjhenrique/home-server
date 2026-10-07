@@ -43,7 +43,7 @@ services:
       homepage.description: Investment portfolio tracker
 
   postgres:
-    image: docker.io/library/postgres:15-alpine
+    image: docker.io/library/postgres:18-alpine
     restart: unless-stopped
     cap_drop:
       - ALL
