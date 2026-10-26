@@ -21,9 +21,11 @@ services:
       - ${EXT_PATH}/documents/export:/usr/src/paperless/export
       - ${EXT_PATH}/documents/consume:/usr/src/paperless/consume
       - ${EXT_PATH}/documents/temporary:/temporary
+    secrets:
+      - paperless_secret_key
     environment:
       PAPERLESS_URL: "${PAPERLESS_URL}"
-      PAPERLESS_SECRET_KEY: "${PAPERLESS_SECRET_KEY:?Set a persistent PAPERLESS_SECRET_KEY in Komodo}"
+      PAPERLESS_SECRET_KEY_FILE: /run/secrets/paperless_secret_key
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_OCR_LANGUAGES: "deu eng"
       # Preserve v2 archive generation and prevent duplicate imports.
@@ -105,3 +107,7 @@ services:
           echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cleanup complete. Sleeping for 24 hours..."
           sleep 86400
         done
+
+secrets:
+  paperless_secret_key:
+    file: ${EXT_PATH}/documents/secrets/paperless-secret-key

@@ -9,13 +9,17 @@ before deployment.
 
 1. Confirm the running instance is on **2.20.15**. Older installations must
    upgrade to that version first.
-2. Create the secret variable `PAPERLESS_SECRET_KEY` in Komodo before syncing
-   the stack resources. Both Lisa and Lovelace definitions reference it.
-   Generate a long random value with
-   `python3 -c 'import secrets; print(secrets.token_urlsafe(64))'` and store it
-   securely. Keep it stable across deployments; never commit its value.
-   If a custom key is already configured on the running instance, retain it.
-   Replacing the old key invalidates sessions and signed tokens.
+2. Prepare the persistent signing key on the Docker host before deployment:
+   `sudo python3 stacks/paperless/prepare-secret.py /mnt/tank` (Lovelace), or
+   use `/mnt/external` for Lisa. This creates
+   `${EXT_PATH}/documents/secrets/paperless-secret-key` with restricted
+   permissions and preserves it on subsequent runs. Its value is never printed.
+   Docker Compose mounts it as a secret and Paperless reads it through
+   `PAPERLESS_SECRET_KEY_FILE`; no Komodo secret variable is needed.
+   If a custom key is already configured on the running instance, securely
+   place that value in the file instead of generating a replacement.
+   A new key invalidates existing sessions and signed tokens. Back up this file
+   with the documents and keep it stable across deployments.
 3. On x86 hosts, confirm the CPU supports the x86-64-v2 baseline, including
    SSE4.2, required by the bundled NumPy. Check for `sse4_2` in `/proc/cpuinfo`;
    consult the migration guide for older CPUs. This check does not apply to ARM.
@@ -35,11 +39,12 @@ before deployment.
 
 ## Deployment and behavior
 
-Sync the updated Komodo resources after adding the secret, then deploy the
+After preparing the secret file, sync the updated Komodo resources and deploy the
 Paperless stack. Startup runs database migrations and automatically rebuilds
 the search index. Allow this to finish before resuming imports.
 
-- `PAPERLESS_SECRET_KEY` is required; Compose fails early when it is missing.
+- The secret file must exist on the Docker host before deployment. Paperless
+  loads its required `PAPERLESS_SECRET_KEY` from the mounted file at startup.
 - `PAPERLESS_ARCHIVE_FILE_GENERATION=always` preserves the v2 default of
   generating archive PDFs. Review OCR settings in the application too, since
   database settings can override environment defaults. The custom scanner PDF
