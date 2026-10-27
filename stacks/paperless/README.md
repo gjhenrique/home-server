@@ -84,8 +84,8 @@ enable AI or require an OpenRouter key.
 
 The override enables AI suggestions, document chat, and similar-document retrieval.
 It uses OpenRouter's OpenAI-compatible endpoint at
-`https://openrouter.ai/api/v1`, with `openai/gpt-4.1-mini` for suggestions/chat
-and `openai/text-embedding-3-small` for the document index. Models can be changed
+`https://openrouter.ai/api/v1`, with `google/gemini-3-flash-preview` for suggestions/chat
+and `qwen/qwen3-embedding-8b` for the document index. Models can be changed
 in the override; generation models must support tool calling. Changing the
 embedding model requires rebuilding the LLM index.
 

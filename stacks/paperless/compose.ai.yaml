@@ -7,8 +7,8 @@ services:
       PAPERLESS_AI_LLM_BACKEND: openai-like
       PAPERLESS_AI_LLM_ENDPOINT: https://openrouter.ai/api/v1
       PAPERLESS_AI_LLM_API_KEY: "${PAPERLESS_OPENROUTER_API_KEY:?Create the PAPERLESS_OPENROUTER_API_KEY secret in Komodo}"
-      PAPERLESS_AI_LLM_MODEL: openai/gpt-4.1-mini
+      PAPERLESS_AI_LLM_MODEL: google/gemini-3-flash-preview
       # RAG powers document chat and similar-document retrieval. Embeddings
       # inherit the LLM API key and endpoint; no second secret is required.
       PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
-      PAPERLESS_AI_LLM_EMBEDDING_MODEL: openai/text-embedding-3-small
+      PAPERLESS_AI_LLM_EMBEDDING_MODEL: qwen/qwen3-embedding-8b
