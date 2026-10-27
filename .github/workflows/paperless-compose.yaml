@@ -1,0 +1,70 @@
+name: Validate Paperless Compose
+
+on:
+  pull_request:
+    paths:
+      - 'stacks/paperless/**'
+      - 'komodo-lisa.toml'
+      - 'komodo-lovelace.toml'
+      - '.github/workflows/paperless-compose.yaml'
+  push:
+    branches: [master]
+    paths:
+      - 'stacks/paperless/**'
+      - 'komodo-lisa.toml'
+      - 'komodo-lovelace.toml'
+      - '.github/workflows/paperless-compose.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate host configuration and secret requirements
+        env:
+          DOMAIN: example.invalid
+          PAPERLESS_URL: https://docs.example.invalid
+          PAPERLESS_SECRET_KEY: ci-placeholder-signing-key
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tomllib
+
+          for filename, name, storage in [
+              ('komodo-lisa.toml', 'paperless', '/mnt/external'),
+              ('komodo-lovelace.toml', 'lovelace-paperless', '/mnt/tank'),
+          ]:
+              resources = tomllib.loads(Path(filename).read_text())
+              stack = next(s['config'] for s in resources['stack'] if s['name'] == name)
+              files = stack.get('file_paths', ['compose.yaml'])
+              command = ['docker', 'compose']
+              for file in files:
+                  command += ['-f', str(Path(stack['run_directory']) / file)]
+              env = dict(os.environ, EXT_PATH=storage)
+              env.pop('PAPERLESS_OPENROUTER_API_KEY', None)
+              if name == 'lovelace-paperless':
+                  env['PAPERLESS_OPENROUTER_API_KEY'] = 'ci-placeholder-provider-key'
+                  assert '[[PAPERLESS_OPENROUTER_API_KEY]]' in stack['environment']
+              rendered = json.loads(subprocess.check_output(
+                  command + ['config', '--format', 'json'], env=env,
+              ))
+              settings = rendered['services']['webserver']['environment']
+              if name == 'paperless':
+                  assert not any(key.startswith('PAPERLESS_AI_') for key in settings)
+              else:
+                  assert settings['PAPERLESS_AI_ENABLED'] == 'true'
+                  assert settings['PAPERLESS_AI_LLM_ENDPOINT'] == 'https://openrouter.ai/api/v1'
+                  assert settings['PAPERLESS_AI_LLM_BACKEND'] == 'openai-like'
+                  assert settings['PAPERLESS_AI_LLM_EMBEDDING_BACKEND'] == 'openai-like'
+                  assert settings['PAPERLESS_AI_LLM_API_KEY'] == env['PAPERLESS_OPENROUTER_API_KEY']
+                  env.pop('PAPERLESS_OPENROUTER_API_KEY')
+                  missing = subprocess.run(command + ['config', '--quiet'], env=env, capture_output=True)
+                  assert missing.returncode != 0 and b'PAPERLESS_OPENROUTER_API_KEY' in missing.stderr
+              print(f'{name}: configuration and isolation checks passed')
+          PY
