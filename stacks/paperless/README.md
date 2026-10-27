@@ -75,3 +75,69 @@ Stop v3 and pause producers. Restore the complete pre-upgrade document directory
 configuration, and secrets, then redeploy the 2.20.15 image. **Changing only the
 image tag is not a rollback:** v2 must not use the database migrated by v3.
 Preserve any documents added after the backup separately for later re-import.
+
+## AI on Lovelace with OpenRouter
+
+Only the `lovelace-paperless` Komodo stack selects both `compose.yaml` and
+`compose.ai.yaml`. Lisa continues to use the base Compose file, which does not
+enable AI or require an OpenRouter key.
+
+The override enables AI suggestions, document chat, and similar-document retrieval.
+It uses OpenRouter's OpenAI-compatible endpoint at
+`https://openrouter.ai/api/v1`, with `openai/gpt-4.1-mini` for suggestions/chat
+and `openai/text-embedding-3-small` for the document index. Models can be changed
+in the override; generation models must support tool calling. Changing the
+embedding model requires rebuilding the LLM index.
+
+### Secret setup
+
+1. In [OpenRouter API Keys](https://openrouter.ai/settings/keys), create a key
+   named `paperless-lovelace`. Set a spending limit appropriate to your usage
+   and ensure the OpenRouter account has credits. This is a provider-issued
+   API key, not a locally generated random string.
+2. In Komodo Variables, create **`PAPERLESS_OPENROUTER_API_KEY`**, enable
+   **Secret**, and paste the OpenRouter key as its value without extra quotes.
+   Keep the existing `PAPERLESS_SECRET_KEY` signing secret as-is: it serves a
+   separate purpose. The dedicated API key lets you track and limit Paperless
+   usage independently of other applications.
+3. Sync the Komodo resources after this PR is merged, then redeploy only
+   `lovelace-paperless`. Its resource definition passes the secret into Compose;
+   the override injects it as `PAPERLESS_AI_LLM_API_KEY`. Embeddings use the same
+   API key and endpoint. No embedding-specific secret is needed.
+
+Enabling the hosted backend sends document text and metadata to OpenRouter and
+its selected providers. Both generation and embedding requests incur usage
+charges. With the embedding backend enabled, Paperless indexes documents on its
+default daily schedule. Review OpenRouter's data-handling settings and your key's
+spending limit before deployment. No remote OCR is configured; OCR remains local.
+
+### Verify AI features
+
+Check **Settings → Application Configuration** for existing AI overrides: values
+stored in the database take precedence over environment variables. Clear or
+align any conflicting values with the override, including the AI enable switch,
+backend, model, endpoint, API key, and embedding settings.
+
+Try **Suggest** on one document and check OpenRouter activity for a successful
+request. Under **Settings → Documents**, select AI suggestions (or both AI and
+ML); disable automatic inbox suggestions if you prefer to request them manually.
+
+Wait for the daily index task, or build the initial index on Lovelace with:
+
+```bash
+docker exec lovelace-paperless-webserver-1 document_llmindex update
+```
+
+This sends existing document text for embedding and may generate charges. Once
+indexing finishes, test the document-chat control and similar-document retrieval.
+Check worker logs for provider errors: 401 usually indicates an invalid key,
+402 insufficient credits or a spending limit, and 429 a rate limit. If you change
+the embedding model, use `document_llmindex rebuild` instead of `update`.
+
+To disable the repository-configured AI features, remove `compose.ai.yaml` from
+Lovelace's `file_paths` and redeploy. Also clear any AI settings enabled directly
+in Application Configuration, since those override the environment.
+
+References: [Paperless AI features](https://docs.paperless-ngx.com/advanced_usage/#ai-features),
+[Paperless AI settings](https://docs.paperless-ngx.com/configuration/#ai),
+[OpenRouter embeddings](https://openrouter.ai/docs/api/api-reference/embeddings/create-embeddings).

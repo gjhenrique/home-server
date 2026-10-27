@@ -179,12 +179,14 @@ server = "lovelace"
 repo = "gjhenrique/home-server"
 run_directory = "stacks/paperless"
 branch = "master"
+file_paths = ["compose.yaml", "compose.ai.yaml"]
 environment = """
 EXT_PATH: /mnt/tank
 DOMAIN: "[[CADDY_DOMAIN]]"
 
 PAPERLESS_URL: "[[PAPERLESS_URL]]"
 PAPERLESS_SECRET_KEY: "[[PAPERLESS_SECRET_KEY]]"
+PAPERLESS_OPENROUTER_API_KEY: "[[PAPERLESS_OPENROUTER_API_KEY]]"
 """
 
 [[stack]]
