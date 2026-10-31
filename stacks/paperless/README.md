@@ -42,6 +42,8 @@ Paperless stack. Startup runs database migrations and automatically rebuilds
 the search index. Allow this to finish before resuming imports.
 
 - `PAPERLESS_SECRET_KEY` is required; Compose fails early when it is missing.
+- `PAPERLESS_OCR_LANGUAGES` installs extra Tesseract packs in the container;
+  Lovelace includes Portuguese (`por`) for documents configured to use it.
 - `PAPERLESS_ARCHIVE_FILE_GENERATION=always` preserves the v2 default of
   generating archive PDFs. Review OCR settings in the application too, since
   database settings can override environment defaults. The custom scanner PDF

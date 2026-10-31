@@ -25,7 +25,7 @@ services:
       PAPERLESS_URL: "${PAPERLESS_URL}"
       PAPERLESS_SECRET_KEY: "${PAPERLESS_SECRET_KEY:?Set a persistent PAPERLESS_SECRET_KEY in Komodo}"
       PAPERLESS_REDIS: redis://broker:6379
-      PAPERLESS_OCR_LANGUAGES: "deu eng"
+      PAPERLESS_OCR_LANGUAGES: "deu eng por"
       # Preserve v2 archive generation and prevent duplicate imports.
       PAPERLESS_ARCHIVE_FILE_GENERATION: "always"
       PAPERLESS_CONSUMER_DELETE_DUPLICATES: "true"
