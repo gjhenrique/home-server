@@ -1,0 +1,54 @@
+mqtt:
+  # The broker runs on the host, so this container uses host networking.
+  server: tcp://127.0.0.1:1883
+  topic_path: qingping/+/up
+  device_id_regex: "qingping/(?P<deviceid>[^/]+)/up"
+  qos: 0
+  object_per_topic_config:
+    encoding: JSON
+
+cache:
+  # Remove stale readings if the monitor stops publishing.
+  timeout: 10m
+
+json_parsing:
+  separator: .
+
+# Qingping Air Monitor Lite (CGDN1) publishes a JSON object with sensorData[0].
+# mqtt2prometheus uses gojsonq paths; array indexes are written as numeric path parts.
+metrics:
+  - prom_name: qingping_temperature
+    mqtt_name: sensorData.0.temperature.value
+    help: Qingping air monitor temperature reading
+    type: gauge
+    omit_timestamp: true
+
+  - prom_name: qingping_humidity
+    mqtt_name: sensorData.0.humidity.value
+    help: Qingping air monitor relative humidity reading
+    type: gauge
+    omit_timestamp: true
+
+  - prom_name: qingping_co2
+    mqtt_name: sensorData.0.co2.value
+    help: Qingping air monitor carbon dioxide reading
+    type: gauge
+    omit_timestamp: true
+
+  - prom_name: qingping_pm25
+    mqtt_name: sensorData.0.pm25.value
+    help: Qingping air monitor PM2.5 reading
+    type: gauge
+    omit_timestamp: true
+
+  - prom_name: qingping_pm10
+    mqtt_name: sensorData.0.pm10.value
+    help: Qingping air monitor PM10 reading
+    type: gauge
+    omit_timestamp: true
+
+  - prom_name: qingping_battery
+    mqtt_name: sensorData.0.battery.value
+    help: Qingping air monitor battery reading
+    type: gauge
+    omit_timestamp: true
