@@ -14,29 +14,6 @@ services:
       - "prometheus.io/address=172.17.0.1:9641"
       - "prometheus.io/path=/metrics"
 
-  qingping_exporter:
-    image: ghcr.io/pedro-stanaka/qingping_exporter/exporter:v0.3.2
-    restart: unless-stopped
-    ports:
-      - "10803:10803"
-    command:
-      - run
-      - --use-fixed-timestamps
-      - --buffer-window=60m
-    environment:
-      - QINGPING_APP_KEY=${QINGPING_APP_KEY:-}
-      - QINGPING_APP_SECRET=${QINGPING_APP_SECRET:-}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:10803/-/healthy"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "prometheus.io/scrape=true"
-      - "prometheus.io/port=10803"
-      - "prometheus.io/address=172.17.0.1:10803"
-      - "prometheus.io/path=/metrics"
-
   weather_exporter:
     image: billykwooten/openweather-exporter:v0.0.14
     restart: unless-stopped
