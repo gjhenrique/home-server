@@ -248,8 +248,6 @@ branch = "master"
 environment = """
 EXT_PATH: /mnt/tank
 
-QINGPING_APP_KEY: "[[QINGPING_APP_KEY]]"
-QINGPING_APP_SECRET: "[[QINGPING_APP_SECRET]]"
 OW_CITY: "[[OW_CITY]]"
 OW_APIKEY: "[[OW_APIKEY]]"
 """
