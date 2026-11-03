@@ -1,5 +1,19 @@
 ---
 services:
+  mqtt2prometheus:
+    image: ghcr.io/hikhvar/mqtt2prometheus:v0.1.7
+    restart: unless-stopped
+    network_mode: host
+    command:
+      - -config=/config/config.yaml
+    volumes:
+      - ./mqtt2prometheus:/config:ro
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9641"
+      - "prometheus.io/address=172.17.0.1:9641"
+      - "prometheus.io/path=/metrics"
+
   qingping_exporter:
     image: ghcr.io/pedro-stanaka/qingping_exporter/exporter:v0.3.2
     restart: unless-stopped
