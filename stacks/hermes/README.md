@@ -30,7 +30,7 @@ Run the interactive setup wizard with the same pinned image used by the stack:
 ```bash
 docker run -it --rm \
   -v /mnt/tank/hermes:/opt/data \
-  nousresearch/hermes-agent:v0.22.2@sha256:36099926da316742423544e055d4734777105ffe6341873af5459b957d0c2919 \
+  nousresearch/hermes-agent:v0.23.0@sha256:adb7890916de63245523492be8f68f9d2095fecbec4e2a6dab7960381f0fc002 \
   setup
 ```
 
