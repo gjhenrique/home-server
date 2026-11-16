@@ -1,0 +1,8 @@
+{
+  "applications": {
+    "slopper-demo": {
+      "tables": ["demo"],
+      "buckets": ["files"]
+    }
+  }
+}

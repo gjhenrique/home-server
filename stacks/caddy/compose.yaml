@@ -12,6 +12,8 @@ services:
       - DOMAIN=${DOMAIN}
       - ALLOWED_EMAILS=${ALLOWED_EMAILS}
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - SLOPPER_PRIVATE_CIDRS=${SLOPPER_PRIVATE_CIDRS:-0.0.0.0/32}
+      - SLOPPER_GATEWAY_PROXY_SECRET=${SLOPPER_GATEWAY_PROXY_SECRET}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ${EXT_PATH}/caddy/data:/data

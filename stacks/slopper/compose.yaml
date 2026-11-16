@@ -1,0 +1,44 @@
+services:
+  gateway:
+    build:
+      context: ../..
+      dockerfile: stacks/slopper/gateway/Dockerfile
+    restart: unless-stopped
+    environment:
+      SLOPPER_PROXY_SECRET: ${SLOPPER_GATEWAY_PROXY_SECRET}
+      SLOPPER_CSRF_SECRET: ${SLOPPER_GATEWAY_CSRF_SECRET}
+      SLOPPER_JWT_SECRET: ${SLOPPER_JWT_SECRET}
+      SLOPPER_INSFORGE_ANON_KEY: ${SLOPPER_INSFORGE_ANON_KEY}
+      SLOPPER_UPSTREAM: http://insforge:7130
+      SLOPPER_POSTGREST: http://postgrest:3000
+      SLOPPER_AI_MODEL: ${SLOPPER_AI_MODEL}
+      SLOPPER_MANIFEST: /etc/slopper/manifest.json
+    ports: ["127.0.0.1:7132:8080"]
+    volumes: ["./resources:/etc/slopper:ro"]
+    networks: [insforge, slopper]
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["127.0.0.1:8088:80"]
+    volumes:
+      - ${SLOPPER_DATA}/sites:/srv/slopper:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [slopper]
+  insforge-admin-proxy:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["127.0.0.1:7130:80"]
+    volumes: ["./admin-proxy.conf:/etc/nginx/conf.d/default.conf:ro"]
+    networks: [insforge, slopper]
+    labels:
+      caddy: "admin.slopper.${DOMAIN}"
+      caddy.import: "slopper_private"
+      caddy.authorize: "with mypolicy"
+      caddy.reverse_proxy: "{{upstreams 80}}"
+      caddy_ingress_network: slopper
+networks:
+  slopper:
+    name: slopper
+  insforge:
+    external: true
+    name: slopper-insforge

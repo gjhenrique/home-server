@@ -1,0 +1,13 @@
+# The Slopper gateway build uses the repository root as its Go module context.
+# Send only its module and package sources; in particular exclude every secret,
+# state file, and unrelated stack from Docker's build context.
+*
+!go.mod
+!internal/
+!internal/slopper/
+!internal/slopper/*.go
+!stacks/
+!stacks/slopper/
+!stacks/slopper/gateway/
+!stacks/slopper/gateway/*.go
+!stacks/slopper/gateway/Dockerfile

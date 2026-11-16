@@ -1,6 +1,7 @@
 {
 	order authenticate before respond
-	order authorize before basicauth
+	order authorize after request_header
+	order basicauth after authorize
 
 	security {
 		oauth identity provider google {
@@ -59,6 +60,60 @@
 (sso) {
 	import only_tls
 	authorize with mypolicy
+}
+
+# Private Slopper sites must fail closed when no trusted networks are configured.
+# remote_ip uses the socket peer and ignores forwarding headers supplied by clients.
+(slopper_private_tls) {
+	import only_tls
+}
+
+(slopper_private) {
+	@slopper_untrusted not remote_ip {$SLOPPER_PRIVATE_CIDRS}
+	respond @slopper_untrusted 403
+}
+
+*.slopper.{$DOMAIN} {
+	import slopper_private_tls
+	@slopper_api host api.slopper.{$DOMAIN}
+	@slopper_admin host admin.slopper.{$DOMAIN}
+	@slopper_app_api path /_slopper/*
+	route {
+		import slopper_private
+		handle @slopper_api {
+			reverse_proxy 127.0.0.1:7132 {
+				header_up X-Slopper-Proxy {$SLOPPER_GATEWAY_PROXY_SECRET}
+			}
+		}
+		handle @slopper_admin {
+			request_header -X-Forwarded-Email
+			request_header -X-Forwarded-User
+			request_header -X-Forwarded-Name
+			request_header -X-Forwarded-Role
+			request_header -X-Slopper-Proxy
+			authorize with mypolicy
+			reverse_proxy 127.0.0.1:7130
+		}
+		handle @slopper_app_api {
+			request_header -X-Forwarded-Email
+			request_header -X-Forwarded-User
+			request_header -X-Forwarded-Name
+			request_header -X-Forwarded-Role
+			request_header -X-Slopper-Proxy
+			reverse_proxy 127.0.0.1:7132 {
+				header_up X-Slopper-Proxy {$SLOPPER_GATEWAY_PROXY_SECRET}
+			}
+		}
+		handle {
+			request_header -X-Forwarded-Email
+			request_header -X-Forwarded-User
+			request_header -X-Forwarded-Name
+			request_header -X-Forwarded-Role
+			request_header -X-Slopper-Proxy
+			authorize with mypolicy
+			reverse_proxy 127.0.0.1:8088
+		}
+	}
 }
 
 auth.{$DOMAIN} {

@@ -8,6 +8,10 @@ GitHub Actions runs [Gitleaks](https://github.com/gitleaks/gitleaks) on pull req
 
 If a finding is a real credential, revoke or rotate it even if it has since been removed from the repository. Investigate false positives before adding a narrowly scoped exception. To scan locally with Gitleaks installed, run `gitleaks git --redact=100`.
 
+## Slopper
+
+Slopper provides private static app hosting and a shared InsForge backend on Lovelace. See [the Slopper operations guide](docs/slopper/README.md) for setup, security boundaries, deployment, resource initialization, backups, and acceptance checks.
+
 ## Stack development
 
 1. Install komodo following the instructions at `stacks/komodo`. Also configure a webhook to trigger new deploys based on procedures.

@@ -1,0 +1,3 @@
+# Resource initialization
+
+Only an operator with access to PostgreSQL and the InsForge admin API applies SQL migrations, creates private storage buckets, and edits `manifest.json`. Apply SQL files in lexical version order; back up first and record applied versions. Then create the per-app private bucket `slp_<app>` using the administrator MCP tool (never through a browser deployment). The manifest's local bucket names map to that app-specific InsForge bucket. The example migration is for a demo only. Commit the manifest change only after migration and bucket creation both succeed.
