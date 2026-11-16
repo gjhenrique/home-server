@@ -2,6 +2,12 @@
 
 Collection of an opinionated Komodo setup to automate some stuff I use in my day-to-day. This repo relies on Tailscale to provide connectivity, including out of the box HTTP and Internet support with Funnel.
 
+## Secret scanning
+
+GitHub Actions runs [Gitleaks](https://github.com/gitleaks/gitleaks) on pull requests, pushes, and manual runs. It scans the checked-out Git history and fails if it finds a potential secret; findings are redacted in the logs. The scan does not unlock git-crypt files, so it cannot inspect their encrypted contents.
+
+If a finding is a real credential, revoke or rotate it even if it has since been removed from the repository. Investigate false positives before adding a narrowly scoped exception. To scan locally with Gitleaks installed, run `gitleaks git --redact=100`.
+
 ## Stack development
 
 1. Install komodo following the instructions at `stacks/komodo`. Also configure a webhook to trigger new deploys based on procedures.

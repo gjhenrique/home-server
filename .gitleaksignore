@@ -1,0 +1,7 @@
+# Historical Tailscale entrypoint curl authentication finding.
+b40dff3ee632d0d6c0624d3c14e6d4a73a2e498a:stacks/tailscale/entrypoint.sh:curl-auth-user:12
+
+# Historical Molecule test fixture findings.
+e7cf2d20e9ad9f2ea7c280c0c74e2e85f78486e2:molecule/default/converge.yml:generic-api-key:99
+e7cf2d20e9ad9f2ea7c280c0c74e2e85f78486e2:molecule/default/converge.yml:generic-api-key:102
+e7cf2d20e9ad9f2ea7c280c0c74e2e85f78486e2:molecule/default/converge.yml:generic-api-key:105
