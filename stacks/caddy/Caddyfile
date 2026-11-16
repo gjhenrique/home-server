@@ -1,7 +1,6 @@
 {
 	order authenticate before respond
-	order authorize after request_header
-	order basicauth after authorize
+	order authorize before basicauth
 
 	security {
 		oauth identity provider google {
