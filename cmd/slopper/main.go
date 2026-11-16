@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bufio"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -15,7 +16,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 	"syscall"
 )
@@ -94,20 +94,34 @@ func send(host string, r Request, dir string) error {
 	if e := validateSite(dir); e != nil {
 		return e
 	}
-	pr, pw := io.Pipe()
 	cmd := exec.Command("ssh", "-T", "-o", "BatchMode=yes", host, "slopper-receiver")
-	cmd.Stdin = pr
+	pw, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if e := cmd.Start(); e != nil {
 		return e
 	}
-	enc := json.NewEncoder(pw)
-	if e := enc.Encode(r); e != nil {
-		pw.CloseWithError(e)
+	writeDone := make(chan error, 1)
+	go func() {
+		writeDone <- writeArchive(pw, r, dir)
+	}()
+	waitErr := cmd.Wait()
+	writeErr := <-writeDone
+	if writeErr != nil {
+		return writeErr
+	}
+	return waitErr
+}
+
+func writeArchive(dst io.WriteCloser, r Request, dir string) error {
+	defer dst.Close()
+	if e := json.NewEncoder(dst).Encode(r); e != nil {
 		return e
 	}
-	tw := tar.NewWriter(pw)
+	tw := tar.NewWriter(dst)
 	e := filepath.Walk(dir, func(p string, fi os.FileInfo, e error) error {
 		if e != nil {
 			return e
@@ -141,19 +155,20 @@ func send(host string, r Request, dir string) error {
 		if e != nil {
 			return e
 		}
-		defer f.Close()
-		_, e = io.Copy(tw, f)
-		return e
+		_, copyErr := io.Copy(tw, f)
+		closeErr := f.Close()
+		if copyErr != nil {
+			return copyErr
+		}
+		return closeErr
 	})
 	if e == nil {
 		e = tw.Close()
 	}
-	pw.CloseWithError(e)
-	wait := cmd.Wait()
 	if e != nil {
 		return e
 	}
-	return wait
+	return nil
 }
 func validateSite(dir string) error {
 	if !filepath.IsAbs(dir) {
@@ -204,7 +219,7 @@ func receive() error {
 		root = "/mnt/tank/slopper/sites"
 	}
 	appRoot := filepath.Join(root, r.App)
-	unlock, err := lockApp(appRoot)
+	unlock, err := lockApp(root, r.App)
 	if err != nil {
 		return err
 	}
@@ -313,17 +328,32 @@ func deploy(src io.Reader, root string) error {
 		return errors.New("index.html is required")
 	}
 	hash := sha256.New()
-	filepath.Walk(tmp, func(p string, i os.FileInfo, e error) error {
+	if e = filepath.Walk(tmp, func(p string, i os.FileInfo, e error) error {
 		if e == nil && i.Mode().IsRegular() {
 			rel, _ := filepath.Rel(tmp, p)
-			_, _ = hash.Write([]byte(filepath.ToSlash(rel)))
+			name := []byte(filepath.ToSlash(rel))
+			_, _ = hash.Write(name)
 			_, _ = hash.Write([]byte{0})
-			f, _ := os.Open(p)
-			io.Copy(hash, f)
-			f.Close()
+			var size [8]byte
+			binary.BigEndian.PutUint64(size[:], uint64(i.Size()))
+			_, _ = hash.Write(size[:])
+			f, openErr := os.Open(p)
+			if openErr != nil {
+				return openErr
+			}
+			_, copyErr := io.Copy(hash, f)
+			closeErr := f.Close()
+			if copyErr != nil {
+				return copyErr
+			}
+			if closeErr != nil {
+				return closeErr
+			}
 		}
 		return e
-	})
+	}); e != nil {
+		return e
+	}
 	id := hex.EncodeToString(hash.Sum(nil))[:16]
 	releaseRoot := filepath.Join(root, "releases")
 	if e = os.MkdirAll(releaseRoot, 0755); e != nil {
@@ -334,6 +364,9 @@ func deploy(src io.Reader, root string) error {
 		if e = os.Rename(tmp, dest); e != nil {
 			return e
 		}
+	}
+	if e = os.Chmod(dest, 0755); e != nil {
+		return e
 	}
 	if e = os.MkdirAll(root, 0755); e != nil {
 		return e
@@ -347,7 +380,7 @@ func deploy(src io.Reader, root string) error {
 		return e
 	}
 	fmt.Println(id)
-	return retain(releaseRoot, id)
+	return retain(root, releaseRoot, id)
 }
 func list(root string) error {
 	es, e := os.ReadDir(filepath.Join(root, "releases"))
@@ -379,41 +412,78 @@ func rollback(root, id string) error {
 	if e := os.Symlink(filepath.Join("releases", id), tmp); e != nil {
 		return e
 	}
-	return os.Rename(tmp, filepath.Join(root, "current"))
+	if e := os.Rename(tmp, filepath.Join(root, "current")); e != nil {
+		return e
+	}
+	return retain(root, filepath.Join(root, "releases"), id)
 }
-func retain(root, active string) error {
+func retain(appRoot, root, active string) error {
 	es, e := os.ReadDir(root)
 	if e != nil {
 		return e
 	}
+	orderPath := filepath.Join(appRoot, ".release-order.json")
+	var prior []string
+	if data, readErr := os.ReadFile(orderPath); readErr == nil {
+		_ = json.Unmarshal(data, &prior)
+	}
 	names := []string{}
+	exists := map[string]bool{}
 	for _, x := range es {
-		if x.IsDir() {
+		if x.IsDir() && regexp.MustCompile(`^[a-f0-9]{16}$`).MatchString(x.Name()) {
 			names = append(names, x.Name())
+			exists[x.Name()] = true
 		}
 	}
-	sort.Sort(sort.Reverse(sort.StringSlice(names)))
-	kept := map[string]bool{active: true}
-	n := 1
-	for _, x := range names {
-		if n < 5 || x == active {
-			kept[x] = true
-			n++
+	ordered := []string{active}
+	seen := map[string]bool{active: true}
+	for _, x := range prior {
+		if exists[x] && !seen[x] {
+			ordered = append(ordered, x)
+			seen[x] = true
 		}
+	}
+	for _, x := range names {
+		if !seen[x] {
+			ordered = append(ordered, x)
+			seen[x] = true
+		}
+	}
+	if len(ordered) > 5 {
+		ordered = ordered[:5]
+	}
+	data, e := json.Marshal(ordered)
+	if e != nil {
+		return e
+	}
+	tmp := orderPath + ".new"
+	if e = os.WriteFile(tmp, data, 0600); e != nil {
+		return e
+	}
+	if e = os.Rename(tmp, orderPath); e != nil {
+		_ = os.Remove(tmp)
+		return e
+	}
+	kept := map[string]bool{}
+	for _, x := range ordered {
+		kept[x] = true
 	}
 	for _, x := range names {
 		if !kept[x] {
-			os.RemoveAll(filepath.Join(root, x))
+			if e = os.RemoveAll(filepath.Join(root, x)); e != nil {
+				return e
+			}
 		}
 	}
 	return nil
 }
 
-func lockApp(root string) (func(), error) {
-	if err := os.MkdirAll(root, 0755); err != nil {
+func lockApp(root, app string) (func(), error) {
+	lockRoot := filepath.Join(root, ".slopper-locks")
+	if err := os.MkdirAll(lockRoot, 0700); err != nil {
 		return nil, err
 	}
-	f, err := os.OpenFile(filepath.Join(root, ".mutation.lock"), os.O_CREATE|os.O_RDWR, 0600)
+	f, err := os.OpenFile(filepath.Join(lockRoot, app+".lock"), os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/json"
 	"io"
@@ -29,10 +30,14 @@ func TestSessionRequiresValidSignedRoleAndExpiry(t *testing.T) {
 		name, role string
 		exp        int64
 		valid      bool
-	}{{"allowed", "authp/user", time.Now().Add(time.Hour).Unix(), true}, {"wrong-role", "guest", time.Now().Add(time.Hour).Unix(), false}, {"expired", "authp/user", time.Now().Add(-time.Hour).Unix(), false}} {
+	}{{"allowed", "authp/user", time.Now().Add(time.Hour).Unix(), true}, {"allowed-hs512", "authp/user", time.Now().Add(time.Hour).Unix(), true}, {"wrong-role", "guest", time.Now().Add(time.Hour).Unix(), false}, {"expired", "authp/user", time.Now().Add(-time.Hour).Unix(), false}} {
 		t.Run(tc.name, func(t *testing.T) {
 			r := httptest.NewRequest("GET", "/", nil)
-			r.AddCookie(&http.Cookie{Name: "AUTHP_ACCESS_TOKEN", Value: token(tc.role, tc.exp)})
+			value := token(tc.role, tc.exp)
+			if tc.name == "allowed-hs512" {
+				value = signedTestToken512(key)
+			}
+			r.AddCookie(&http.Cookie{Name: "AUTHP_ACCESS_TOKEN", Value: value})
 			_, _, ok := session(r)
 			if ok != tc.valid {
 				t.Fatalf("session valid=%v want %v", ok, tc.valid)
@@ -68,6 +73,16 @@ func TestAIForwardingUsesConfiguredModel(t *testing.T) {
 	ai(w, r)
 	if w.Code != 200 {
 		t.Fatalf("AI forward status %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestAIRejectsJSONNull(t *testing.T) {
+	t.Setenv("SLOPPER_AI_MODEL", "fixture/model")
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("POST", "/ai/chat/completion", strings.NewReader("null"))
+	ai(w, r)
+	if w.Code != 400 {
+		t.Fatalf("null body status=%d", w.Code)
 	}
 }
 
@@ -114,6 +129,59 @@ func TestDatabaseQueryAllowlist(t *testing.T) {
 	}
 }
 
+func TestDatabaseAcceptsReservedQueryKeysAndNormalizesAppSlug(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/slp_my_app__items" {
+			t.Errorf("database path=%s", r.URL.Path)
+		}
+		if r.URL.Query().Get("select") != "id" || r.URL.Query().Get("limit") != "10" {
+			t.Errorf("query=%s", r.URL.RawQuery)
+		}
+		w.WriteHeader(200)
+	}))
+	defer upstream.Close()
+	t.Setenv("SLOPPER_POSTGREST", upstream.URL)
+	manifest := t.TempDir() + "/manifest.json"
+	if err := os.WriteFile(manifest, []byte(`{"applications":{"my-app":{"tables":["items"],"buckets":[]}}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("SLOPPER_MANIFEST", manifest)
+	r := httptest.NewRequest("GET", "/db/items?select=id&limit=10", nil)
+	w := httptest.NewRecorder()
+	database(w, r, claims{}, "/db/items", "my-app")
+	if w.Code != 200 {
+		t.Fatalf("database status=%d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestHeadReadDoesNotRequireMutationHeaders(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "HEAD" {
+			t.Errorf("method=%s", r.Method)
+		}
+		w.WriteHeader(200)
+	}))
+	defer upstream.Close()
+	t.Setenv("SLOPPER_PROXY_SECRET", "proxy secret that is long enough for test")
+	t.Setenv("SLOPPER_JWT_SECRET", "JWT secret that is long enough for testing")
+	t.Setenv("SLOPPER_CSRF_SECRET", "CSRF secret that is long enough for tests")
+	t.Setenv("SLOPPER_POSTGREST", upstream.URL)
+	manifest := t.TempDir() + "/manifest.json"
+	if err := os.WriteFile(manifest, []byte(`{"applications":{"app":{"tables":["items"],"buckets":[]}}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("SLOPPER_MANIFEST", manifest)
+	r := httptest.NewRequest("HEAD", "https://app.slopper.example/_slopper/db/items", nil)
+	r.Host = "app.slopper.example"
+	r.Header.Set("X-Slopper-Proxy", "proxy secret that is long enough for test")
+	r.AddCookie(&http.Cookie{Name: "AUTHP_ACCESS_TOKEN", Value: signedTestToken("JWT secret that is long enough for testing")})
+	w := httptest.NewRecorder()
+	serve(w, r)
+	if w.Code != 200 {
+		t.Fatalf("HEAD status=%d body=%s", w.Code, w.Body.String())
+	}
+}
+
 func TestGatewayRejectsSpoofedIdentityAndMissingCSRF(t *testing.T) {
 	proxy := "proxy secret that is long enough for test"
 	key := "JWT secret that is long enough for testing"
@@ -151,6 +219,15 @@ func signedTestToken(key string) string {
 	body, _ := json.Marshal(map[string]any{"sub": "u", "email": "u@example.test", "roles": []string{"authp/user"}, "exp": time.Now().Add(time.Hour).Unix()})
 	payload := base64.RawURLEncoding.EncodeToString(body)
 	m := hmac.New(sha256.New, []byte(key))
+	m.Write([]byte(head + "." + payload))
+	return head + "." + payload + "." + base64.RawURLEncoding.EncodeToString(m.Sum(nil))
+}
+
+func signedTestToken512(key string) string {
+	head := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS512"}`))
+	body, _ := json.Marshal(map[string]any{"sub": "u", "email": "u@example.test", "roles": []string{"authp/user"}, "exp": time.Now().Add(time.Hour).Unix()})
+	payload := base64.RawURLEncoding.EncodeToString(body)
+	m := hmac.New(sha512.New, []byte(key))
 	m.Write([]byte(head + "." + payload))
 	return head + "." + payload + "." + base64.RawURLEncoding.EncodeToString(m.Sum(nil))
 }

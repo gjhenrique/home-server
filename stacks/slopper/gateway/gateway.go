@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash"
 	"home-server-public/internal/slopper"
 	"io"
 	"net/http"
@@ -117,7 +119,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 		fail(w, 405, "method not allowed")
 		return
 	}
-	if r.Method != "GET" && !mutation(w, r, c, exp) {
+	if r.Method != "GET" && r.Method != "HEAD" && !mutation(w, r, c, exp) {
 		return
 	}
 	if r.Method != "GET" && r.Method != "HEAD" && strings.HasPrefix(path, "/db/") {
@@ -146,10 +148,19 @@ func session(r *http.Request) (claims, int64, bool) {
 	var headerClaims struct {
 		Alg string `json:"alg"`
 	}
-	if err != nil || json.Unmarshal(header, &headerClaims) != nil || headerClaims.Alg != "HS256" {
+	if err != nil || json.Unmarshal(header, &headerClaims) != nil {
 		return claims{}, 0, false
 	}
-	mac := hmac.New(sha256.New, secret("SLOPPER_JWT_SECRET"))
+	var hashFunc func() hash.Hash
+	switch headerClaims.Alg {
+	case "HS256":
+		hashFunc = sha256.New
+	case "HS512":
+		hashFunc = sha512.New
+	default:
+		return claims{}, 0, false
+	}
+	mac := hmac.New(hashFunc, secret("SLOPPER_JWT_SECRET"))
 	mac.Write([]byte(p[0] + "." + p[1]))
 	sig, e := base64.RawURLEncoding.DecodeString(p[2])
 	if e != nil || !hmac.Equal(sig, mac.Sum(nil)) {
@@ -216,7 +227,7 @@ func database(w http.ResponseWriter, r *http.Request, c claims, path, apiApp str
 			return
 		}
 		for _, v := range vs {
-			if isFilter(k) && !scalarFilter.MatchString(v) {
+			if !allowedQuery[k] && !scalarFilter.MatchString(v) {
 				fail(w, 400, "scalar filters only")
 				return
 			}
@@ -234,7 +245,8 @@ func database(w http.ResponseWriter, r *http.Request, c claims, path, apiApp str
 		fail(w, 400, "scalar projections only")
 		return
 	}
-	proxy(w, r, "/slp_"+app+"__"+table, q)
+	databaseApp := strings.ReplaceAll(app, "-", "_")
+	proxy(w, r, "/slp_"+databaseApp+"__"+table, q)
 }
 func isFilter(k string) bool { return tableRE.MatchString(k) }
 func validQueryValue(k, v string) bool {
@@ -323,6 +335,10 @@ func ai(w http.ResponseWriter, r *http.Request) {
 	var req map[string]any
 	if json.Unmarshal(b, &req) != nil {
 		fail(w, 400, "invalid JSON")
+		return
+	}
+	if req == nil {
+		fail(w, 400, "JSON object required")
 		return
 	}
 	req["model"] = os.Getenv("SLOPPER_AI_MODEL")

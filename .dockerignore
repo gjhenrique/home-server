@@ -4,10 +4,15 @@
 *
 !go.mod
 !internal/
+internal/*
 !internal/slopper/
+internal/slopper/*
 !internal/slopper/*.go
 !stacks/
+stacks/*
 !stacks/slopper/
+stacks/slopper/*
 !stacks/slopper/gateway/
+stacks/slopper/gateway/*
 !stacks/slopper/gateway/*.go
 !stacks/slopper/gateway/Dockerfile

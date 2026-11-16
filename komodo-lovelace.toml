@@ -436,6 +436,7 @@ branch = "master"
 file_paths = ["insforge.compose.yaml"]
 environment = """
 SLOPPER_DATA: /mnt/tank/slopper
+DOMAIN: "[[CADDY_DOMAIN]]"
 POSTGRES_USER: "[[SLOPPER_POSTGRES_USER]]"
 POSTGRES_PASSWORD: "[[SLOPPER_POSTGRES_PASSWORD]]"
 POSTGRES_DB: "[[SLOPPER_POSTGRES_DB]]"

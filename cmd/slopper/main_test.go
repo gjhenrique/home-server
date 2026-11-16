@@ -3,6 +3,7 @@ package main
 import (
 	"archive/tar"
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -42,6 +43,31 @@ func TestDeployCreatesAndReusesContentAddressedRelease(t *testing.T) {
 	second, _ := os.Readlink(filepath.Join(root, "current"))
 	if first != second {
 		t.Fatalf("identical deploy changed release: %s -> %s", first, second)
+	}
+	info, err := os.Stat(filepath.Join(root, first))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm()&0111 == 0 {
+		t.Fatalf("published release is not traversable: %v", info.Mode())
+	}
+}
+
+func TestReleaseHashSeparatesAmbiguousFileStreams(t *testing.T) {
+	ids := []string{}
+	for _, files := range []map[string]string{{"index.html": "AB", "a": "C"}, {"index.html": "A", "a": "BC"}} {
+		root := filepath.Join(t.TempDir(), "app")
+		if err := deploy(bytes.NewReader(makeTar(t, files)), root); err != nil {
+			t.Fatal(err)
+		}
+		link, err := os.Readlink(filepath.Join(root, "current"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids = append(ids, filepath.Base(link))
+	}
+	if ids[0] == ids[1] {
+		t.Fatalf("ambiguous file streams got same release id %s", ids[0])
 	}
 }
 func TestDeployRejectsUnsafeArchives(t *testing.T) {
@@ -99,14 +125,21 @@ func TestRollbackSwitchesRelease(t *testing.T) {
 
 func TestPerAppMutationLockSerializes(t *testing.T) {
 	root := filepath.Join(t.TempDir(), "app")
-	unlock, err := lockApp(root)
+	lockRoot, app := filepath.Dir(root), filepath.Base(root)
+	unlock, err := lockApp(lockRoot, app)
 	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(root, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.RemoveAll(root); err != nil {
 		t.Fatal(err)
 	}
 	acquired := make(chan struct{})
 	done := make(chan func(), 1)
 	go func() {
-		u, e := lockApp(root)
+		u, e := lockApp(lockRoot, app)
 		if e == nil {
 			acquired <- struct{}{}
 			done <- u
@@ -127,21 +160,58 @@ func TestPerAppMutationLockSerializes(t *testing.T) {
 }
 
 func TestReleaseRetentionPreservesActiveAndRecent(t *testing.T) {
-	root := t.TempDir()
+	appRoot := t.TempDir()
+	releases := filepath.Join(appRoot, "releases")
+	if err := os.MkdirAll(releases, 0755); err != nil {
+		t.Fatal(err)
+	}
 	for _, id := range []string{"0000000000000001", "0000000000000002", "0000000000000003", "0000000000000004", "0000000000000005", "0000000000000006"} {
-		if err := os.Mkdir(filepath.Join(root, id), 0755); err != nil {
+		if err := os.Mkdir(filepath.Join(releases, id), 0755); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if err := retain(root, "0000000000000001"); err != nil {
+	prior, _ := json.Marshal([]string{"0000000000000002", "0000000000000003", "0000000000000004", "0000000000000005", "0000000000000006"})
+	if err := os.WriteFile(filepath.Join(appRoot, ".release-order.json"), prior, 0600); err != nil {
 		t.Fatal(err)
 	}
-	entries, _ := os.ReadDir(root)
+	if err := retain(appRoot, releases, "0000000000000001"); err != nil {
+		t.Fatal(err)
+	}
+	entries, _ := os.ReadDir(releases)
 	if len(entries) != 5 {
 		t.Fatalf("retained %d releases", len(entries))
 	}
-	if _, err := os.Stat(filepath.Join(root, "0000000000000001")); err != nil {
+	if _, err := os.Stat(filepath.Join(releases, "0000000000000001")); err != nil {
 		t.Fatal("active release removed")
+	}
+	if _, err := os.Stat(filepath.Join(releases, "0000000000000005")); err != nil {
+		t.Fatal("most recently activated rollback target removed")
+	}
+	if _, err := os.Stat(filepath.Join(releases, "0000000000000006")); err == nil {
+		t.Fatal("oldest release was retained")
+	}
+}
+
+func TestDeploySendReturnsWhenSSHExitsEarly(t *testing.T) {
+	bin := t.TempDir()
+	sshPath := filepath.Join(bin, "ssh")
+	if err := os.WriteFile(sshPath, []byte("#!/bin/sh\nexit 1\n"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "index.html"), []byte("ok"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	done := make(chan error, 1)
+	go func() { done <- send("unused", Request{Command: "deploy", App: "app"}, dir) }()
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatal("expected SSH failure")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("send hung after SSH exited")
 	}
 }
 
