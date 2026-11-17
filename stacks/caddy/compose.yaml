@@ -12,6 +12,10 @@ services:
       - DOMAIN=${DOMAIN}
       - ALLOWED_EMAILS=${ALLOWED_EMAILS}
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      # PMQ: fail closed until the Komodo secrets are configured. "a^" is
+      # an unmatchable regex, so no identity can receive pmq/app-user.
+      - PMQ_ALLOWED_EMAILS=${PMQ_ALLOWED_EMAILS:-a^}
+      - PMQ_OPERATOR_CIDRS=${PMQ_OPERATOR_CIDRS:-0.0.0.0/32}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ${EXT_PATH}/caddy/data:/data

@@ -1,0 +1,44 @@
+---
+# PMQ (Poor Man's Quick): a single Go binary that hosts deployed static apps,
+# per-app JSON documents and object files. Apps are served at
+# *.quick.${DOMAIN} behind Caddy SSO; the admin API needs PMQ's bearer deploy
+# token and is only reachable via pmq-admin.quick.${DOMAIN} from private
+# networks. PMQ is a full-trust system: every allowlisted account can reach
+# every app. Upstream: https://github.com/pedro-stanaka/pmq
+
+services:
+  pmq:
+    image: ghcr.io/pedro-stanaka/pmq:0.1.0
+    restart: unless-stopped
+    # Host network with an explicit loopback listen: Caddy runs on the host
+    # network too, so its connections arrive from exactly 127.0.0.1. A bridge
+    # network plus a published loopback port would instead make the peer the
+    # bridge gateway (e.g. 172.x.0.1), which is not a stable trusted proxy.
+    # Nothing but the host can reach a loopback listener: other containers
+    # and the LAN cannot connect at all.
+    network_mode: host
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      # Explicit loopback listen: the image default is 0.0.0.0:8080, which
+      # would expose PMQ on every host interface under network_mode: host.
+      - PMQ_LISTEN=127.0.0.1:8080
+      - PMQ_DOMAIN=quick.${DOMAIN}
+      - PMQ_DEPLOY_TOKEN=${PMQ_DEPLOY_TOKEN:?Set PMQ_DEPLOY_TOKEN}
+      - PMQ_TRUSTED_PROXIES=127.0.0.1/32
+      - PMQ_IDENTITY_HEADER=X-PMQ-User
+      - PMQ_STORAGE_PROVIDER=filesystem
+    volumes:
+      # Created by the operator; must be owned by 100:101 (image pmq user).
+      - ${EXT_PATH}/pmq:/data
+    stop_grace_period: 15s
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:8080/_pmq/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
