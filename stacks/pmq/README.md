@@ -17,8 +17,13 @@ access without revisiting that assumption.
   `PMQ_OPERATOR_CIDRS` (LAN/tailnet), only routes `/_pmq/admin/*`, and PMQ
   still requires the `Authorization: Bearer` deploy token. Point CLI admin
   commands at `https://pmq-admin.quick.${DOMAIN}`.
-- PMQ listens on `127.0.0.1:8080` and trusts only that peer
-  (`PMQ_TRUSTED_PROXIES=127.0.0.1/32`).
+- PMQ runs in the host network namespace but listens only on
+  `127.0.0.1:8080` (`network_mode: host` + `PMQ_LISTEN=127.0.0.1:8080`),
+  so Caddy's host-network connections arrive from exactly `127.0.0.1` —
+  the only peer PMQ trusts (`PMQ_TRUSTED_PROXIES=127.0.0.1/32`). A
+  bridge network with a published loopback port would make the peer the
+  bridge gateway instead, which is not a stable or trustworthy address.
+  Other containers and the LAN cannot reach a loopback listener at all.
 
 ## Prerequisites (one-time, operator)
 

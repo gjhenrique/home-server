@@ -8,7 +8,7 @@ set -eu
 : "${DOMAIN:?set DOMAIN, for example tanaka.dev.br}"
 : "${PMQ_PROBE_IP:?set to the Lovelace address Caddy listens on}"
 : "${PMQ_SMOKE_APP:=hello-world}"
-: "${PMQ_PUBLIC_IP:-}"
+: "${PMQ_PUBLIC_IP:=}"
 
 app_host="${PMQ_SMOKE_APP}.quick.${DOMAIN}"
 admin_host="pmq-admin.quick.${DOMAIN}"
@@ -19,7 +19,7 @@ status() {
     --resolve "${host}:443:${ip}" "https://${host}${path}"
 }
 expect() {
-  host=$1 path=$2 expected=$3 ip=$4 actual
+  host=$1 path=$2 expected=$3 ip=$4
   actual=$(status "$host" "$path" "$ip")
   if [ "$actual" != "$expected" ]; then
     echo "FAIL https://${host}${path}: expected HTTP ${expected}, received HTTP ${actual}" >&2
