@@ -32,6 +32,14 @@ services:
       - PMQ_TRUSTED_PROXIES=127.0.0.1/32
       - PMQ_IDENTITY_HEADER=X-PMQ-User
       - PMQ_STORAGE_PROVIDER=filesystem
+      # Optional OpenAI-compatible AI gateway. All values are optional; the
+      # gateway is disabled unless PMQ_AI_MODELS and PMQ_AI_DEFAULT_MODEL are
+      # set (Komodo secrets on the lovelace instance).
+      - PMQ_AI_MODELS=${PMQ_AI_MODELS:-}
+      - PMQ_AI_DEFAULT_MODEL=${PMQ_AI_DEFAULT_MODEL:-}
+      - PMQ_AI_PRICING=${PMQ_AI_PRICING:-}
+      - PMQ_AI_GLOBAL_BUDGET_USD=${PMQ_AI_GLOBAL_BUDGET_USD:-0}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     volumes:
       # Created by the operator; must be owned by 100:101 (image pmq user).
       - ${EXT_PATH}/pmq:/data

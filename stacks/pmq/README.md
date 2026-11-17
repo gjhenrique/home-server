@@ -48,6 +48,17 @@ access without revisiting that assumption.
 No PostgreSQL, object storage or AI provider is required: PMQ uses its
 filesystem storage in `/data`.
 
+## AI gateway
+
+The OpenAI-compatible gateway at `POST /_pmq/ai/chat/completions` (relative
+URL from any app host) is enabled via Komodo secrets: `PMQ_AI_MODELS`,
+`PMQ_AI_DEFAULT_MODEL`, `PMQ_AI_PRICING` and `PMQ_OPENROUTER_API_KEY`.
+The current binding is `gemini-flash=google/gemini-3.5-flash-lite|stream`
+through OpenRouter. Pricing from the OpenRouter model card enables the
+global budget cutoff (`PMQ_AI_GLOBAL_BUDGET_USD: 5`, resets at UTC
+midnight). Rotate the key by updating the `PMQ_OPENROUTER_API_KEY`
+Komodo secret and redeploying this stack.
+
 ## Deploy
 
 The `lovelace-pmq` Komodo stack deploys `stacks/pmq/compose.yaml` on
