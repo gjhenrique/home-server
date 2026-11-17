@@ -27,6 +27,14 @@
 				regex match email {$ALLOWED_EMAILS}
 				action add role authp/user
 			}
+
+			# PMQ apps use a dedicated role so PMQ access can stay narrower than
+			# the general authp/user group. Fail closed via the compose default.
+			transform user {
+				match realm google
+				regex match email {$PMQ_ALLOWED_EMAILS}
+				action add role pmq/app-user
+			}
 		}
 
 		authorization policy mypolicy {
@@ -35,6 +43,16 @@
 			allow roles authp/admin authp/user
 			validate bearer header
 			inject headers with claims
+		}
+
+		# PMQ apps: dedicated role plus the identity header PMQ trusts from its
+		# Caddy peer. The policy clears a client-supplied X-PMQ-User before
+		# authorization and injects it only for a valid token.
+		authorization policy pmq_apps {
+			set auth url https://auth.{$DOMAIN}/oauth2/google
+			crypto key verify {$JWT_SHARED_KEY}
+			allow roles pmq/app-user
+			inject header "X-PMQ-User" from email
 		}
 
 		# Paperless: allow username/password login (web + API). No Caddy JWT required.
@@ -59,6 +77,35 @@
 (sso) {
 	import only_tls
 	authorize with mypolicy
+}
+
+# PMQ apps: every request on the app wildcard is authorized against the
+# shared Google SSO portal before it reaches PMQ; admin routes are blocked.
+*.quick.{$DOMAIN} {
+	import only_tls
+	route {
+		@admin path /_pmq/admin /_pmq/admin/*
+		respond @admin "Not Found" 404
+
+		# Defense in depth; the pmq_apps policy also clears this header.
+		request_header -X-PMQ-User
+		authorize with pmq_apps
+		reverse_proxy 127.0.0.1:8080
+	}
+}
+
+# PMQ operator hostname: private CIDRs only, admin API only. PMQ still
+# requires its bearer deploy token; SSO alone grants no admin access.
+pmq-admin.quick.{$DOMAIN} {
+	import only_tls
+	route {
+		@notAdmin not path /_pmq/admin /_pmq/admin/*
+		respond @notAdmin "Not Found" 404
+		@operator remote_ip {$PMQ_OPERATOR_CIDRS}
+		request_header -X-PMQ-User
+		reverse_proxy @operator 127.0.0.1:8080
+		respond "Forbidden" 403
+	}
 }
 
 auth.{$DOMAIN} {
