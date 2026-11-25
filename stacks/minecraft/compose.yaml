@@ -28,7 +28,7 @@ services:
           create_host_path: false
 
   playit:
-    image: ghcr.io/playit-cloud/playit-agent:1.0@sha256:5b7748d3e8564f1cac3d3a295a23640136fbf774c76a9509bd262d16b324b06b
+    image: ghcr.io/playit-cloud/playit-agent:2.0@sha256:29862011f13e6e30c20829261eb52aa9b334598892f1cf2be0790680691b90fd
     restart: unless-stopped
     environment:
       SECRET_KEY: ${MINECRAFT_PLAYIT_SECRET_KEY:?Set the MINECRAFT_PLAYIT_SECRET_KEY Komodo secret}
