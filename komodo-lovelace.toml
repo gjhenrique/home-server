@@ -459,4 +459,5 @@ branch = "master"
 webhook_enabled = false
 environment = """
 MINECRAFT_PLAYIT_SECRET_KEY: "[[MINECRAFT_PLAYIT_SECRET_KEY]]"
+MINECRAFT_MONITOR_SERVERS: "[[MINECRAFT_MONITOR_SERVERS]]"
 """
