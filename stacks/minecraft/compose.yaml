@@ -1,7 +1,7 @@
 ---
 services:
   minecraft:
-    image: itzg/minecraft-server:2026.11.0-java25
+    image: itzg/minecraft-server:2026.11.1-java25
     restart: unless-stopped
     stop_grace_period: 60s
     cpus: 2
