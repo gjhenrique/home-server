@@ -1,0 +1,40 @@
+---
+services:
+  minecraft:
+    image: itzg/minecraft-server:2026.11.0-java25
+    restart: unless-stopped
+    stop_grace_period: 60s
+    cpus: 2
+    mem_limit: 2g
+    memswap_limit: 2g
+    environment:
+      VERSION: "26.3"
+      TYPE: VANILLA
+      EULA: "TRUE"
+      # Container root maps to the user running rootless Docker.
+      UID: "0"
+      GID: "0"
+      MEMORY: 1G
+      ONLINE_MODE: "true"
+      ENABLE_WHITELIST: "true"
+      EXISTING_WHITELIST_FILE: SKIP
+    ports:
+      - "192.168.1.219:25565:25565/tcp"
+    volumes:
+      - type: bind
+        source: /mnt/tank/minecraft
+        target: /data
+        bind:
+          create_host_path: false
+
+  playit:
+    image: ghcr.io/playit-cloud/playit-agent:1.0@sha256:5b7748d3e8564f1cac3d3a295a23640136fbf774c76a9509bd262d16b324b06b
+    restart: unless-stopped
+    environment:
+      SECRET_KEY: ${MINECRAFT_PLAYIT_SECRET_KEY:?Set the MINECRAFT_PLAYIT_SECRET_KEY Komodo secret}
+    networks:
+      - playit
+
+networks:
+  playit:
+    driver: bridge
