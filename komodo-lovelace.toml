@@ -446,3 +446,17 @@ PMQ_AI_PRICING: "[[PMQ_AI_PRICING]]"
 PMQ_AI_GLOBAL_BUDGET_USD: 5
 OPENROUTER_API_KEY: "[[PMQ_OPENROUTER_API_KEY]]"
 """
+
+[[stack]]
+name = "minecraft"
+tags = ["lovelace"]
+deploy = false
+[stack.config]
+server = "lovelace-rootless"
+repo = "gjhenrique/home-server"
+run_directory = "stacks/minecraft"
+branch = "master"
+webhook_enabled = false
+environment = """
+MINECRAFT_PLAYIT_SECRET_KEY: "[[MINECRAFT_PLAYIT_SECRET_KEY]]"
+"""
