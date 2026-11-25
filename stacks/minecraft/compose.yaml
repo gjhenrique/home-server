@@ -35,6 +35,25 @@ services:
     networks:
       - playit
 
+  mc-monitor:
+    image: itzg/mc-monitor:1.21.0
+    command: ["export-for-prometheus", "--timeout", "5s"]
+    restart: unless-stopped
+    user: "65534:65534"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      # Comma-separated Java endpoints with explicit TCP ports.
+      EXPORT_SERVERS: ${MINECRAFT_MONITOR_SERVERS:-192.168.1.219:25565}
+    ports:
+      - "127.0.0.1:9225:8080/tcp"
+    networks:
+      - monitor
+
 networks:
   playit:
+    driver: bridge
+  monitor:
     driver: bridge
