@@ -1,7 +1,7 @@
 {
   "packages": [
     "git-crypt@0.8.0",
-    "opentofu@1.12.5",
+    "opentofu@1.13.9",
     "restic@0.19.1",
     "yq-go@4.53.3",
   ],
