@@ -36,7 +36,7 @@ services:
       - playit
 
   mc-monitor:
-    image: itzg/mc-monitor:1.21.0
+    image: itzg/mc-monitor:1.21.1
     command: ["export-for-prometheus", "--timeout", "5s"]
     restart: unless-stopped
     user: "65534:65534"
